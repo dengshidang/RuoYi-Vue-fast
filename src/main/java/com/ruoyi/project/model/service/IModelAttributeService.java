@@ -1,8 +1,8 @@
 package com.ruoyi.project.model.service;
 
-import java.util.List;
 import com.ruoyi.project.model.domain.ModelAttribute;
-import io.swagger.models.auth.In;
+
+import java.util.List;
 
 /**
  * 模型属性Service接口
@@ -18,7 +18,7 @@ public interface IModelAttributeService
      * @param modelAttrId 模型属性主键
      * @return 模型属性
      */
-    public ModelAttribute selectModelAttributeByModelAttrId(Integer modelAttrId);
+     ModelAttribute selectModelAttributeByModelAttrId(Integer modelAttrId);
 
     /**
      * 查询模型属性列表
@@ -26,7 +26,7 @@ public interface IModelAttributeService
      * @param modelAttribute 模型属性
      * @return 模型属性集合
      */
-    public List<ModelAttribute> selectModelAttributeList(ModelAttribute modelAttribute);
+     List<ModelAttribute> selectModelAttributeList(ModelAttribute modelAttribute);
 
     /**
      * 新增模型属性
@@ -42,7 +42,7 @@ public interface IModelAttributeService
      * @param modelAttribute 模型属性
      * @return 结果
      */
-    public int updateModelAttribute(ModelAttribute modelAttribute);
+     int updateModelAttribute(ModelAttribute modelAttribute);
 
     /**
      * 批量删除模型属性
@@ -50,15 +50,8 @@ public interface IModelAttributeService
      * @param modelAttrIds 需要删除的模型属性主键集合
      * @return 结果
      */
-    public int deleteModelAttributeByModelAttrIds(Integer... modelAttrIds);
+     int deleteModelAttributeByModelAttrIds(Integer... modelAttrIds);
 
-    /**
-     * 删除模型属性信息
-     *
-     * @param modelAttrId 模型属性主键
-     * @return 结果
-     */
-    public int deleteModelAttributeByModelAttrId(Integer modelAttrId);
     /**
      * 是否可以删除
      *

@@ -1,18 +1,18 @@
 package com.ruoyi.project.model.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.project.model.domain.ModelAttribute;
+import com.ruoyi.project.model.mapper.ModelAttributeMapper;
+import com.ruoyi.project.model.service.IModelAttributeService;
 import io.mybatis.mapper.example.Example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.model.mapper.ModelAttributeMapper;
-import com.ruoyi.project.model.domain.ModelAttribute;
-import com.ruoyi.project.model.service.IModelAttributeService;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 模型属性Service业务层处理
@@ -116,18 +116,6 @@ public class ModelAttributeServiceImpl implements IModelAttributeService
                 Stream.of(modelAttrIds).collect(Collectors.toList()));
     }
 
-    /**
-     * 删除模型属性信息
-     *
-     * @param modelAttrId 模型属性主键
-     * @return 结果
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public int deleteModelAttributeByModelAttrId(Integer modelAttrId)
-    {
-        return deleteModelAttributeByModelAttrIds(modelAttrId);
-    }
 
     @Override
     public boolean candelete(Integer... modelAttrIds) {

@@ -1,19 +1,14 @@
 package com.ruoyi.project.model.domain;
 
-import java.util.Date;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.verify.Update;
+import com.ruoyi.framework.config.mybatis.FastjsonArrayHandler;
 import io.mybatis.provider.Entity;
 import lombok.Data;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.framework.aspectj.lang.annotation.Excel;
-import com.ruoyi.framework.web.domain.BaseEntity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 模型分类对象 model_category
@@ -21,7 +16,7 @@ import javax.validation.constraints.NotNull;
  * @author dengsd
  * @date 2022-07-29
  */
-@Entity.Table("model_category")
+@Entity.Table(value = "model_category",autoResultMap = true)
 @Data
 public class ModelCategory {
 
@@ -33,6 +28,8 @@ public class ModelCategory {
     @NotBlank
     @Entity.Column("model_cate_name")
     private String modelCateName;
+    @Entity.Column(value = "interfaces",typeHandler = FastjsonArrayHandler.class)
+    private List<ModelInterface> interfaces;
     @Entity.Column("model_cate_icon")
     private String modelCateIcon;
     @Entity.Column("origins")
@@ -45,6 +42,7 @@ public class ModelCategory {
     private Integer status;
     @Entity.Column("`order_num`")
     private Integer orderNum;
+    private Boolean haschild;
 
     public String getCode() {
         return code;

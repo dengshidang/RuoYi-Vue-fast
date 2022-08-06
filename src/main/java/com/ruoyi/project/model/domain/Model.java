@@ -21,6 +21,8 @@ public class Model {
     /** $column.columnComment */
     @Entity.Column(value = "model_name")
     private String modelName;
+    @Entity.Column(value = "model_code")
+    private String modelCode;
     @Entity.Column(value = "model_img")
     private String modelImg;
 

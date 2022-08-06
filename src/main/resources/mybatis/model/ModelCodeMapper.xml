@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.model.mapper.ModelCodeMapper">
+    <insert id="insertModelCode" parameterType="com.ruoyi.project.model.domain.ModelCode">
+        <selectKey resultType="int" keyProperty="interfaceId" order="BEFORE">
+            SELECT @num := @num + 1
+            FROM (SELECT @num := ifnull(MAX(interface_id), 0) from model_code where interface_code = #{interfaceCode} and model_cate_id = #{modelCateId}) n
+        </selectKey>
+        insert into model_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            model_code,
+            model_cate_id,
+            interface_code,
+            interface_name,
+            interface_id,
+            <if test="modelAttrs != null and modelAttrs != ''">
+                model_attrs,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            concat(
+                    #{modelCode},
+                    '${@com.ruoyi.project.model.enums.EModelCodeSeparator@DEFAULT.getSeparator()}',
+                    #{interfaceCode},
+                    '${@com.ruoyi.project.model.enums.EModelCodeSeparator@DEFAULT.getSeparator()}',
+                    lpad(#{interfaceId}, 4, 0)
+                ),
+            #{modelCateId},
+            #{interfaceCode},
+            #{interfaceName},
+            #{interfaceId},
+            <if test="modelAttrs != null and modelAttrs != ''">
+                #{modelAttrs,typeHandler=com.ruoyi.framework.config.mybatis.FastjsonArrayHandler},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+</mapper>

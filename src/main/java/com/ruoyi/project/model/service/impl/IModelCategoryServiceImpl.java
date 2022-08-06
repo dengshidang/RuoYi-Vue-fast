@@ -5,6 +5,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.project.model.domain.Model;
 import com.ruoyi.project.model.domain.ModelCategory;
+import com.ruoyi.project.model.domain.ModelInterface;
 import com.ruoyi.project.model.mapper.ModelCategoryMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.project.model.service.IModelService;
@@ -133,9 +134,15 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
             }
 
         }
-
+        //处理接口名称
+        if(StringUtils.isNotEmpty(modelCategory.getInterfaces())){
+            List<ModelInterface> interfaces = modelCategory.getInterfaces();
+            interfaces.stream().forEach(m->m.setCode(StringUtils.convertToPinYin(m.getName())));
+        }
         modelCategory.setCode(pinYin);
         modelCategory.setOrigins(cateName);
+        // 是否有子类
+        modelCategory.setHaschild(hasChrildren(modelCategory.getModelCateId()));
 
     }
 

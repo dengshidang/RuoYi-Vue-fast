@@ -1,5 +1,6 @@
 package com.ruoyi.project.model.service.impl;
 
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.project.model.domain.Model;
 import com.ruoyi.project.model.mapper.ModelMapper;
 import com.ruoyi.project.model.service.IModelService;
@@ -19,7 +20,15 @@ public class IModelServiceImpl implements IModelService {
     public boolean exists(Model model) {
         Example<Model> example = new Example<>();
         Example.Criteria<Model> criteria = example.createCriteria();
-        criteria.andEqualTo(Model::getCateId,model.getCateId());
-        return false;
+        if(StringUtils.isNotNull(model.getModelId())){
+            criteria.andEqualTo(Model::getModelId,model.getModelId());
+        }
+        if(StringUtils.isNotNull(model.getCateId())){
+            criteria.andEqualTo(Model::getCateId,model.getCateId());
+        }
+        if(StringUtils.isNotEmpty(model.getModelCode())){
+            criteria.andEqualTo(Model::getModelCode,model.getModelCode());
+        }
+        return modelMapper.countByExample(example) > 0;
     }
 }

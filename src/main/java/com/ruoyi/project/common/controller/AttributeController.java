@@ -7,7 +7,7 @@ import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.framework.web.page.TableDataInfo;
-import com.ruoyi.project.model.domain.ModelAttribute;
+import com.ruoyi.project.model.domain.Attribute;
 import com.ruoyi.project.model.service.IModelAttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,16 +35,16 @@ public class AttributeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:attribute:list')")
     @GetMapping("/list")
-    public TableDataInfo list(ModelAttribute modelAttribute)
+    public TableDataInfo list(Attribute attribute)
     {
         startPage();
-        List<ModelAttribute> list = modelAttributeService.selectModelAttributeList(modelAttribute);
+        List<Attribute> list = modelAttributeService.selectModelAttributeList(attribute,(ex)->ex.orderByDesc(Attribute::getAttrId));
         return getDataTable(list);
     }
     @GetMapping("/all")
-    public AjaxResult all(ModelAttribute modelAttribute)
+    public AjaxResult all(Attribute attribute)
     {
-        return AjaxResult.success(modelAttributeService.selectModelAttributeList(modelAttribute));
+        return AjaxResult.success(modelAttributeService.selectModelAttributeList(attribute,(ex)->ex.orderByAsc(Attribute::getAttrId)));
     }
 
     /**
@@ -53,10 +53,10 @@ public class AttributeController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:attribute:export')")
     @Log(title = "模型属性", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, ModelAttribute modelAttribute)
+    public void export(HttpServletResponse response, Attribute attribute)
     {
-        List<ModelAttribute> list = modelAttributeService.selectModelAttributeList(modelAttribute);
-        ExcelUtil<ModelAttribute> util = new ExcelUtil<ModelAttribute>(ModelAttribute.class);
+        List<Attribute> list = modelAttributeService.selectModelAttributeList(attribute,(ex)->ex.orderByDesc(Attribute::getAttrId));
+        ExcelUtil<Attribute> util = new ExcelUtil<Attribute>(Attribute.class);
         util.exportExcel(response, list, "模型属性数据");
     }
 
@@ -76,9 +76,9 @@ public class AttributeController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:attribute:add')")
     @Log(title = "模型属性", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody @Validated ModelAttribute modelAttribute)
+    public AjaxResult add(@RequestBody @Validated Attribute attribute)
     {
-        return toAjax(modelAttributeService.insertModelAttribute(modelAttribute));
+        return toAjax(modelAttributeService.insertModelAttribute(attribute));
     }
 
     /**
@@ -87,9 +87,9 @@ public class AttributeController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:attribute:edit')")
     @Log(title = "模型属性", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody  @Validated ModelAttribute modelAttribute)
+    public AjaxResult edit(@RequestBody  @Validated Attribute attribute)
     {
-        return toAjax(modelAttributeService.updateModelAttribute(modelAttribute));
+        return toAjax(modelAttributeService.updateModelAttribute(attribute));
     }
 
     /**
@@ -97,9 +97,9 @@ public class AttributeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:attribute:remove')")
     @Log(title = "模型属性", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{modelAttrIds}")
-    public AjaxResult remove(@PathVariable Integer[] modelAttrIds)
+	@DeleteMapping("/{modelAttrId}")
+    public AjaxResult remove(@PathVariable Integer modelAttrId)
     {
-        return toAjax(modelAttributeService.deleteModelAttributeByModelAttrIds(modelAttrIds));
+        return toAjax(modelAttributeService.deleteModelAttributeByModelAttrId(modelAttrId));
     }
 }

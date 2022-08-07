@@ -45,6 +45,12 @@ public interface IModelCodeService
      int updateModelCode(ModelCode modelCode);
 
     /**
+     * 是否存在
+     * @param modelCode
+     * @return
+     */
+    boolean exists(ModelCode modelCode);
+    /**
      * 校验是否可以删除
      * @param modelCode
      */

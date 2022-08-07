@@ -6,19 +6,18 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.project.model.domain.Model;
 import com.ruoyi.project.model.domain.ModelCategory;
 import com.ruoyi.project.model.domain.ModelCode;
-import com.ruoyi.project.model.enums.EModelCodeSeparator;
 import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.project.model.service.IModelCodeService;
 import com.ruoyi.project.model.service.IModelService;
-import io.mybatis.mapper.example.Example;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,14 +56,34 @@ public class ModelCodeServiceImpl implements IModelCodeService {
      */
     @Override
     public List<ModelCode> selectModelCodeList(ModelCode modelCode) {
-        Example<ModelCode> example = modelCodeMapper.wrapper()
-                .eq(StringUtils.isNotEmpty(modelCode.getModelCode()), ModelCode::getModelCode, modelCode.getModelCode())
-                .eq(ObjectUtils.allNotNull(modelCode.getModelCateId()), ModelCode::getModelCateId, modelCode.getModelCateId())
-                .like(StringUtils.isNotEmpty(modelCode.getInterfaceName()), ModelCode::getModelCode, modelCode.getModelCode())
-                .like(StringUtils.isNotEmpty(modelCode.getInterfaceCode()), ModelCode::getInterfaceCode, modelCode.getInterfaceCode())
-                .orderByDesc(ModelCode::getModelCode, ModelCode::getCreateTime)
-                .example();
-        return modelCodeMapper.selectByExample(example);
+//        Example<ModelCode> example = modelCodeMapper.wrapper()
+//                .eq(StringUtils.isNotEmpty(modelCode.getModelCode()), ModelCode::getModelCode, modelCode.getModelCode())
+//                .eq(ObjectUtils.allNotNull(modelCode.getModelCateId()), ModelCode::getModelCateId, modelCode.getModelCateId())
+//                .like(StringUtils.isNotEmpty(modelCode.getInterfaceName()), ModelCode::getInterfaceName, modelCode.getInterfaceName())
+//                .like(StringUtils.isNotEmpty(modelCode.getInterfaceCode()), ModelCode::getInterfaceCode, modelCode.getInterfaceCode())
+//                .orderByDesc(ModelCode::getModelCode, ModelCode::getCreateTime)
+//                .example();
+//        if(StringUtils.isNotEmpty(modelCode.getUsed())){
+//
+//        }
+//        List<ModelCode> dbmodelCodes = modelCodeMapper.selectByExample(example);
+        List<ModelCode> dbmodelCodes = modelCodeMapper.list(modelCode);
+        if (StringUtils.isNotEmpty(dbmodelCodes)) {
+            ModelCategory category = new ModelCategory();
+            category.setCateIds(dbmodelCodes.stream().map(ModelCode::getModelCateId).collect(Collectors.toSet()));
+            List<ModelCategory> categoryList = modelCategoryService.list(category, ModelCategory::getModelCateId, ModelCategory::getOrigins);
+            if (StringUtils.isNotEmpty(categoryList)) {
+                Map<Integer, ModelCategory> categoryMap = categoryList.stream().collect(Collectors.toMap(ModelCategory::getModelCateId, Function.identity()));
+                dbmodelCodes.forEach(f ->
+                {
+                    ModelCategory item = categoryMap.get(f.getModelCateId());
+                    if (StringUtils.isNotNull(item)) {
+                        f.setModelCateName(item.getOrigins().replaceAll(",", "/"));
+                    }
+                });
+            }
+        }
+        return dbmodelCodes;
     }
 
     /**
@@ -85,13 +104,23 @@ public class ModelCodeServiceImpl implements IModelCodeService {
         if (StringUtils.isNull(dbcategory)) {
             throw new ServiceException("模型分类不存在或已删除");
         }
-        if(StringUtils.isNotEmpty(modelCode.getModelCode())){
-            String[] split = modelCode.getModelCode().split(EModelCodeSeparator.DEFAULT.getSeparator());
-            split[0] = dbcategory.getCode();
-            modelCode.setModelCode(Arrays.stream(split).collect(Collectors.joining(EModelCodeSeparator.DEFAULT.getSeparator())));
-        }else{
+        if (StringUtils.isEmpty(modelCode.getModelCode())) {
             modelCode.setModelCode(dbcategory.getCode());
         }
+        // 是否存在
+        if (exists(modelCode)) {
+            throw new ServiceException("编码已存在");
+        }
+    }
+
+    public boolean exists(ModelCode modelCode) {
+        return modelCodeMapper.countByExample(modelCodeMapper.wrapper()
+                .ne(StringUtils.isNotEmpty(modelCode.getModelCode()), ModelCode::getModelCode, modelCode.getModelCode())
+                .eq(ObjectUtils.isNotEmpty(modelCode.getModelCateId()), ModelCode::getModelCateId, modelCode.getModelCateId())
+                .eq(StringUtils.isNotEmpty(modelCode.getInterfaceCode()), ModelCode::getInterfaceCode, modelCode.getInterfaceCode())
+                .eq(StringUtils.isNotEmpty(modelCode.getModelAttrIds()), ModelCode::getModelAttrIds, modelCode.getModelAttrIds())
+                .eq(StringUtils.isNotEmpty(modelCode.getModelAttrValues()), ModelCode::getModelAttrValues, modelCode.getModelAttrValues())
+                .example()) > 0;
     }
 
     /**
@@ -103,7 +132,8 @@ public class ModelCodeServiceImpl implements IModelCodeService {
     @Override
     public int updateModelCode(ModelCode modelCode) {
         modelCode.setUpdateTime(DateUtils.getNowDate());
-        return modelCodeMapper.updateByPrimaryKey(modelCode);
+        verify(modelCode);
+        return modelCodeMapper.updateByPrimaryKeySelective(modelCode);
     }
 
     @Override

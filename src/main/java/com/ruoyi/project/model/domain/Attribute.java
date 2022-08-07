@@ -7,6 +7,7 @@ import lombok.Data;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
  */
 @Entity.Table(value = "attribute",autoResultMap = true)
 @Data
-public class ModelAttribute
+public class Attribute implements Serializable
 {
     private static final Long serialVersionUID = 1L;
 
@@ -32,6 +33,7 @@ public class ModelAttribute
     @Entity.Column(value = "attr_name")
     private String attrName;
     @Entity.Column(value = "attr_group",remark = "prod,model,material")
+    @NotBlank
     private String attrGroup;
 
     @NotBlank

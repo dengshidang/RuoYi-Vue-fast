@@ -1,11 +1,12 @@
 package com.ruoyi.project.model.service;
 
 import com.ruoyi.project.model.domain.ModelCategory;
+import io.mybatis.mapper.fn.Fn;
 
 import java.util.List;
 
 public interface IModelCategoryService {
-    List<ModelCategory> list(ModelCategory modelCategory);
+    List<ModelCategory> list(ModelCategory modelCategory, Fn<ModelCategory,Object>... fns);
 
     ModelCategory getInfo(Integer modelCateId);
 
@@ -48,4 +49,12 @@ public interface IModelCategoryService {
      * @return
      */
     boolean delete(Integer... modelCateIds);
+
+    /**
+     * 接口名称是否被使用
+     * @param modelCateId
+     * @param interfaceCode
+     * @return
+     */
+    boolean usedInterfaceCode(Integer modelCateId, String interfaceCode);
 }

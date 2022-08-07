@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 模型分类对象 model_category
@@ -59,5 +60,9 @@ public class ModelCategory {
     private Date updateTime;
     private Date createTime;
    private transient List<ModelCategory> children;
+   private transient Set<Integer> cateIds;
+   // 删除接口名称需要校验时，请求后台的参数
+   private transient String interfaceCode;
+
 
 }

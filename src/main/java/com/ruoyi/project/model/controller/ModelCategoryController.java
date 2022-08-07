@@ -1,28 +1,19 @@
 package com.ruoyi.project.model.controller;
 
-import java.util.List;
-
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.TreeUtil;
-import com.ruoyi.framework.web.domain.TreeSelect;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.project.model.domain.ModelCategory;
-import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
-import com.ruoyi.framework.web.page.TableDataInfo;
+import com.ruoyi.project.model.domain.ModelCategory;
+import com.ruoyi.project.model.service.IModelCategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 模型分类Controller
@@ -60,6 +51,12 @@ public class ModelCategoryController extends BaseController
     public AjaxResult getInfo(@PathVariable("modelCateId") Integer modelCateId)
     {
         return AjaxResult.success(modelCategoryService.getInfo(modelCateId));
+    }
+    @PreAuthorize("@ss.hasPermi('model:category:edit')")
+    @GetMapping(value = "/usedInterface")
+    public AjaxResult usedInterface(ModelCategory modelCategory)
+    {
+        return AjaxResult.success(modelCategoryService.usedInterfaceCode(modelCategory.getModelCateId(),modelCategory.getInterfaceCode()));
     }
 
     /**

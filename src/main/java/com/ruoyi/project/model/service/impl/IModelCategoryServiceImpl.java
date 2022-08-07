@@ -5,20 +5,21 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.project.model.domain.Model;
 import com.ruoyi.project.model.domain.ModelCategory;
+import com.ruoyi.project.model.domain.ModelCode;
 import com.ruoyi.project.model.domain.ModelInterface;
 import com.ruoyi.project.model.mapper.ModelCategoryMapper;
+import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.project.model.service.IModelService;
 import io.mybatis.mapper.example.Example;
+import io.mybatis.mapper.fn.Fn;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,14 +32,19 @@ import java.util.stream.Stream;
 public class IModelCategoryServiceImpl implements IModelCategoryService {
     @Autowired
     ModelCategoryMapper modelCategoryMapper;
+    @Autowired
+    ModelCodeMapper modelCodeMapper;
 
     @Autowired
     @Lazy
     IModelService modelService;
 
     @Override
-    public List<ModelCategory> list(ModelCategory modelCategory) {
+    public List<ModelCategory> list(ModelCategory modelCategory, Fn<ModelCategory,Object>... fns) {
         Example<ModelCategory> example = new Example<>();
+        if(ObjectUtils.allNotNull(fns)){
+            example.selectColumns(fns);
+        }
         Example.Criteria<ModelCategory> criteria = example.createCriteria();
         if (StringUtils.isNotBlank(modelCategory.getModelCateName())) {
             criteria.andLike(ModelCategory::getModelCateName, modelCategory.getModelCateName());
@@ -51,6 +57,9 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
         }
         if (!Objects.isNull(modelCategory.getModelCateLevel())) {
             criteria.andEqualTo(ModelCategory::getModelCateLevel, modelCategory.getModelCateLevel());
+        }
+        if (StringUtils.isNotEmpty(modelCategory.getCateIds())) {
+            criteria.andIn(ModelCategory::getModelCateId, modelCategory.getCateIds());
         }
 
         return modelCategoryMapper.selectByExample(example);
@@ -137,7 +146,18 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
         //处理接口名称
         if(StringUtils.isNotEmpty(modelCategory.getInterfaces())){
             List<ModelInterface> interfaces = modelCategory.getInterfaces();
-            interfaces.stream().forEach(m->m.setCode(StringUtils.convertToPinYin(m.getName())));
+            Set<String> temset = new HashSet<>();
+            for (int i = 0; i < interfaces.size(); i++) {
+                ModelInterface modelInterface = interfaces.get(i);
+                String yin = StringUtils.convertToPinYin(modelInterface.getName());
+                //避免相同拼音重复
+                if(temset.add(yin)){
+                    modelInterface.setCode(yin);
+                }else{
+                    modelInterface.setCode(yin+i);
+                }
+            }
+
         }
         modelCategory.setCode(pinYin);
         modelCategory.setOrigins(cateName);
@@ -168,6 +188,15 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
         //是否可以删除
         verifyDelete(modelCateIds);
         return modelCategoryMapper.deleteByFieldList(ModelCategory::getModelCateId, Stream.of(modelCateIds).collect(Collectors.toList())) > 0;
+    }
+
+    @Override
+    public boolean usedInterfaceCode(Integer modelCateId, String interfaceCode) {
+        Example<ModelCode> example = modelCodeMapper.wrapper()
+                .eq(ModelCode::getModelCateId, modelCateId)
+                .eq(ModelCode::getInterfaceCode, interfaceCode).example();
+        return modelCodeMapper.countByExample(example) > 0;
+
     }
 
 }

@@ -1,8 +1,11 @@
 package com.ruoyi.project.model.service;
 
-import com.ruoyi.project.model.domain.ModelAttribute;
+import com.ruoyi.common.enums.ECategoryGroup;
+import com.ruoyi.project.model.domain.Attribute;
+import io.mybatis.mapper.example.Example;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 模型属性Service接口
@@ -18,31 +21,31 @@ public interface IModelAttributeService
      * @param modelAttrId 模型属性主键
      * @return 模型属性
      */
-     ModelAttribute selectModelAttributeByModelAttrId(Integer modelAttrId);
+     Attribute selectModelAttributeByModelAttrId(Integer modelAttrId);
 
     /**
      * 查询模型属性列表
      *
-     * @param modelAttribute 模型属性
+     * @param attribute 模型属性
      * @return 模型属性集合
      */
-     List<ModelAttribute> selectModelAttributeList(ModelAttribute modelAttribute);
+     List<Attribute> selectModelAttributeList(Attribute attribute, Consumer<Example<Attribute>>...consumers);
 
     /**
      * 新增模型属性
      *
-     * @param modelAttribute 模型属性
+     * @param attribute 模型属性
      * @return 结果
      */
-    public int insertModelAttribute(ModelAttribute modelAttribute);
+    public int insertModelAttribute(Attribute attribute);
 
     /**
      * 修改模型属性
      *
-     * @param modelAttribute 模型属性
+     * @param attribute 模型属性
      * @return 结果
      */
-     int updateModelAttribute(ModelAttribute modelAttribute);
+     int updateModelAttribute(Attribute attribute);
 
     /**
      * 批量删除模型属性
@@ -50,11 +53,14 @@ public interface IModelAttributeService
      * @param modelAttrIds 需要删除的模型属性主键集合
      * @return 结果
      */
-     int deleteModelAttributeByModelAttrIds(Integer... modelAttrIds);
+     int deleteModelAttributeByModelAttrId(Integer modelAttrIds);
 
     /**
      * 是否可以删除
-     *
+     * @param group
+     * @param modelAttrId
+     * @return
      */
-    boolean candelete(Integer...modelAttrIds);
+    boolean candelete(ECategoryGroup group, Integer  modelAttrId);
+
 }

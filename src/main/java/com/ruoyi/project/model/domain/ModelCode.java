@@ -63,6 +63,6 @@ public class ModelCode
     private String remark;
     @Excel(name = "模型分类")
     private transient String modelCateName;
-    private transient Boolean used;
+    private transient String used;
 
 }

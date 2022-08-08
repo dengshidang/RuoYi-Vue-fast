@@ -72,6 +72,7 @@
         <result column="model_code" property="modelCode"/>
         <result column="model_cate_id" property="modelCateId"/>
         <result column="interface_code" property="interfaceCode"/>
+        <result column="used" property="used"/>
         <result column="model_attr_value" property="modelAttrValues"/>
         <result column="interface_name" property="interfaceName"/>
         <result column="interface_id" property="interfaceId"/>
@@ -107,7 +108,7 @@
                 and mc2.model_cate_name like concat(trim(#{modelCateName}),'%'))
             </if>
         </where>
-        <if test="used != null ">
+        <if test="used != null and used != '' ">
             having  used = #{used}
         </if>
         order by mc.create_time desc

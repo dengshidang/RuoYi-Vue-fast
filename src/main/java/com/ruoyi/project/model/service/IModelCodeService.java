@@ -70,4 +70,8 @@ public interface IModelCodeService
      * @return
      */
     boolean saveToGroup(String[] modelCodes);
+    /**
+     * 解除组合
+     */
+    boolean deleteGroup(List<String> modelCodes);
 }

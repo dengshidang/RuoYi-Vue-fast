@@ -22,6 +22,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.ruoyi.common.enums.ESeparator.DOUHAO;
+
 /**
  * 模型编码Service业务层处理
  *
@@ -121,9 +123,25 @@ public class ModelCodeServiceImpl implements IModelCodeService {
      */
     @Override
     public int updateModelCode(ModelCode modelCode) {
+        ModelCode dbmodelCode = modelCodeMapper.selectByPrimaryKey(modelCode.getModelCode()).orElseThrow(() -> new ServiceException("记录不存在或已删除"));
         modelCode.setUpdateTime(DateUtils.getNowDate());
         verify(modelCode);
-        return modelCodeMapper.updateByPrimaryKeySelective(modelCode);
+        // 组合码
+        String modelGroup = dbmodelCode.getModelGroup();
+        if(StringUtils.isNotEmpty(modelGroup)){
+            if(StringUtils.isNotEmpty(modelCode.getModelGroup())){
+                String[] grouparr = modelCode.getModelGroup().split(DOUHAO.getSeparator());
+                if(grouparr.length<2){
+                    // 清除组合码
+                    modelCode.setModelGroup("");
+                    List<String> list = Stream.of(modelGroup.split(DOUHAO.getSeparator())).collect(Collectors.toList());
+                    list.removeIf(f->f.equals(modelCode.getModelCode()));
+                    // 解除
+                    deleteGroup(list);
+                }
+            }
+        }
+        return modelCodeMapper.updateByPrimaryKey(modelCode);
     }
 
     @Override
@@ -161,12 +179,23 @@ public class ModelCodeServiceImpl implements IModelCodeService {
                 throw  new ServiceException("请勿重复添加分组:"+code);
             }
         }
+        // 相同的接口才能组合
         ModelCode modelCode = new ModelCode();
         List<String> codes = Arrays.stream(modelCodes).collect(Collectors.toList());
         String modelgroup = Arrays.stream(modelCodes).collect(Collectors.joining(","));
         modelCode.setModelGroup(modelgroup);
         return  modelCodeMapper.updateByExampleSelective(modelCode,modelCodeMapper.wrapper()
                 .in(ModelCode::getModelCode, codes)
+                .example()) > 0;
+
+    }
+    @Override
+    public boolean deleteGroup(List<String> modelCodes) {
+        if(ObjectUtils.isEmpty(modelCodes)) return false;
+        ModelCode modelCode = new ModelCode();
+        modelCode.setModelGroup("");
+        return  modelCodeMapper.updateByExampleSelective(modelCode,modelCodeMapper.wrapper()
+                .in(ModelCode::getModelCode, modelCodes)
                 .example()) > 0;
 
     }

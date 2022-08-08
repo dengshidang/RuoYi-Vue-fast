@@ -64,5 +64,10 @@ public interface IModelCodeService
      */
      int deleteModelCodeByModeCodes(String... modeCodes);
 
-
+    /**
+     * 添加到分组
+     * @param modelCodes
+     * @return
+     */
+    boolean saveToGroup(String[] modelCodes);
 }

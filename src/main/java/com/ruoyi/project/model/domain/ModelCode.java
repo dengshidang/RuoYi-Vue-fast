@@ -38,6 +38,8 @@ public class ModelCode
     @Entity.Column("interface_name")
     @Excel(name = "接口名称")
     private String interfaceName;
+    @Entity.Column("model_group")
+    private String modelGroup;
 
     /** 接口ID */
     @Entity.Column("interface_id")

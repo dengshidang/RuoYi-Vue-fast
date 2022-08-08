@@ -40,6 +40,7 @@ public class ModelCodeController extends BaseController
         return getDataTable(list);
     }
 
+
     /**
      * 导出模型编码列表
      */
@@ -95,4 +96,12 @@ public class ModelCodeController extends BaseController
     {
         return toAjax(modelCodeService.deleteModelCodeByModeCodes(modeCodes));
     }
+
+    @PreAuthorize("@ss.hasPermi('model:code:edit')")
+    @GetMapping("/saveToGroup/{modelCodes}")
+    public AjaxResult saveToGroup(@PathVariable String[] modelCodes)
+    {
+        return toAjax(modelCodeService.saveToGroup(modelCodes));
+    }
+
 }

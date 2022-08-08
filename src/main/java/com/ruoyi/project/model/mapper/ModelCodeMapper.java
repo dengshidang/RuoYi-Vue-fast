@@ -20,5 +20,8 @@ public interface ModelCodeMapper extends BaseMapper<ModelCode, String> {
     @Select("select count(*) from model_code where find_in_set(#{modelAttrId},model_attr_ids)")
     int existsByAttrId(@Param("modelAttrId") Integer modelAttrId);
 
+    @Select("select count(*) from model_code where  find_in_set(#{modelCode},model_group)")
+    int existsByModelGroup(@Param("modelCode") String modelCode);
+
     List<ModelCode> list(ModelCode modelCode);
 }

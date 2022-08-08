@@ -10,6 +10,7 @@ import com.ruoyi.project.model.domain.ModelInterface;
 import com.ruoyi.project.model.mapper.ModelCategoryMapper;
 import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
+import com.ruoyi.project.model.service.IModelCodeService;
 import com.ruoyi.project.model.service.IModelService;
 import io.mybatis.mapper.example.Example;
 import io.mybatis.mapper.fn.Fn;
@@ -33,7 +34,7 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
     @Autowired
     ModelCategoryMapper modelCategoryMapper;
     @Autowired
-    ModelCodeMapper modelCodeMapper;
+    IModelCodeService modelCodeService ;
 
     @Autowired
     @Lazy
@@ -101,6 +102,11 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
             model.setCateId(cateId);
             if (modelService.exists(model)) {
                 throw new ServiceException("当前分类下有模型数据,不能删除");
+            }
+            ModelCode modelCode = new ModelCode();
+            modelCode.setModelCateId(cateId);
+            if (modelCodeService.exists(modelCode)) {
+                throw new ServiceException("当前分类已有模型编码,不能删除");
             }
             if (this.hasChrildren(cateId)) {
                 throw new ServiceException("当前分类有下级,不能删除");
@@ -192,10 +198,10 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
 
     @Override
     public boolean usedInterfaceCode(Integer modelCateId, String interfaceCode) {
-        Example<ModelCode> example = modelCodeMapper.wrapper()
-                .eq(ModelCode::getModelCateId, modelCateId)
-                .eq(ModelCode::getInterfaceCode, interfaceCode).example();
-        return modelCodeMapper.countByExample(example) > 0;
+        ModelCode modelCode = new ModelCode();
+        modelCode.setModelCateId(modelCateId);
+        modelCode.setInterfaceCode(interfaceCode);
+        return modelCodeService.exists(modelCode);
 
     }
 

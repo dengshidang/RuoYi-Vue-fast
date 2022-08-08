@@ -10,11 +10,13 @@ import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.project.model.service.IModelCodeService;
 import com.ruoyi.project.model.service.IModelService;
+import io.mybatis.mapper.example.Example;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -56,17 +58,6 @@ public class ModelCodeServiceImpl implements IModelCodeService {
      */
     @Override
     public List<ModelCode> selectModelCodeList(ModelCode modelCode) {
-//        Example<ModelCode> example = modelCodeMapper.wrapper()
-//                .eq(StringUtils.isNotEmpty(modelCode.getModelCode()), ModelCode::getModelCode, modelCode.getModelCode())
-//                .eq(ObjectUtils.allNotNull(modelCode.getModelCateId()), ModelCode::getModelCateId, modelCode.getModelCateId())
-//                .like(StringUtils.isNotEmpty(modelCode.getInterfaceName()), ModelCode::getInterfaceName, modelCode.getInterfaceName())
-//                .like(StringUtils.isNotEmpty(modelCode.getInterfaceCode()), ModelCode::getInterfaceCode, modelCode.getInterfaceCode())
-//                .orderByDesc(ModelCode::getModelCode, ModelCode::getCreateTime)
-//                .example();
-//        if(StringUtils.isNotEmpty(modelCode.getUsed())){
-//
-//        }
-//        List<ModelCode> dbmodelCodes = modelCodeMapper.selectByExample(example);
         List<ModelCode> dbmodelCodes = modelCodeMapper.list(modelCode);
         if (StringUtils.isNotEmpty(dbmodelCodes)) {
             ModelCategory category = new ModelCategory();
@@ -161,4 +152,23 @@ public class ModelCodeServiceImpl implements IModelCodeService {
         return modelCodeMapper.deleteByFieldList(ModelCode::getModelCode, Stream.of(modeCodes).collect(Collectors.toList()));
     }
 
+    @Override
+    public boolean saveToGroup(String[] modelCodes) {
+        if(ObjectUtils.isEmpty(modelCodes) || modelCodes.length < 2) throw  new ServiceException("至少添加两条记录");
+        // 是否存在
+        for (String code : modelCodes) {
+            int exists = modelCodeMapper.existsByModelGroup(code);
+            if(exists > 0){
+                throw  new ServiceException("请勿重复添加分组:"+code);
+            }
+        }
+        ModelCode modelCode = new ModelCode();
+        List<String> codes = Arrays.stream(modelCodes).collect(Collectors.toList());
+        String modelgroup = Arrays.stream(modelCodes).collect(Collectors.joining(","));
+        modelCode.setModelGroup(modelgroup);
+        return  modelCodeMapper.updateByExample(modelCode,modelCodeMapper.wrapper()
+                .in(ModelCode::getModelCode, codes)
+                .example()) > 0;
+
+    }
 }

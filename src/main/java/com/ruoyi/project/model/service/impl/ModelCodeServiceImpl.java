@@ -10,7 +10,6 @@ import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.project.model.service.IModelCodeService;
 import com.ruoyi.project.model.service.IModelService;
-import io.mybatis.mapper.example.Example;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -166,7 +165,7 @@ public class ModelCodeServiceImpl implements IModelCodeService {
         List<String> codes = Arrays.stream(modelCodes).collect(Collectors.toList());
         String modelgroup = Arrays.stream(modelCodes).collect(Collectors.joining(","));
         modelCode.setModelGroup(modelgroup);
-        return  modelCodeMapper.updateByExample(modelCode,modelCodeMapper.wrapper()
+        return  modelCodeMapper.updateByExampleSelective(modelCode,modelCodeMapper.wrapper()
                 .in(ModelCode::getModelCode, codes)
                 .example()) > 0;
 

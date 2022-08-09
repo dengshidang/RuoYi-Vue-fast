@@ -38,9 +38,9 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             concat(
                     #{modelCode},
-                    '${@com.ruoyi.project.model.enums.EModelCodeSeparator@DEFAULT.getSeparator()}',
+                    '${@com.ruoyi.common.enums.ESeparator@DEFAULT.getSeparator()}',
                     #{interfaceCode},
-                    '${@com.ruoyi.project.model.enums.EModelCodeSeparator@DEFAULT.getSeparator()}',
+                    '${@com.ruoyi.common.enums.ESeparator@DEFAULT.getSeparator()}',
                     lpad(#{interfaceId}, 4, 0)
                 ),
             #{modelCateId},

@@ -8,7 +8,6 @@ import com.ruoyi.project.model.domain.ModelCategory;
 import com.ruoyi.project.model.domain.ModelCode;
 import com.ruoyi.project.model.domain.ModelInterface;
 import com.ruoyi.project.model.mapper.ModelCategoryMapper;
-import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelCategoryService;
 import com.ruoyi.project.model.service.IModelCodeService;
 import com.ruoyi.project.model.service.IModelService;
@@ -120,6 +119,8 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
         ModelCategory parentCategory = null;
         if (StringUtils.isNotNull(modelCategory.getParentId())) {
             parentCategory = getInfo(modelCategory.getParentId());
+        }else{
+            modelCategory.setParentId(0);
         }
         if (exists(modelCategory)) throw new ServiceException("分类名称已存在");
         String cateName = modelCategory.getModelCateName();
@@ -167,8 +168,11 @@ public class IModelCategoryServiceImpl implements IModelCategoryService {
         }
         modelCategory.setCode(pinYin);
         modelCategory.setOrigins(cateName);
-        // 是否有子类
-        modelCategory.setHaschild(hasChrildren(modelCategory.getModelCateId()));
+        if(ObjectUtils.allNotNull(modelCategory.getModelCateId())){
+            // 是否有子类
+            modelCategory.setHaschild(hasChrildren(modelCategory.getModelCateId()));
+        }
+
 
     }
 

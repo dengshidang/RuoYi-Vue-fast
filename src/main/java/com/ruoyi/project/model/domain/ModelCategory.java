@@ -43,6 +43,8 @@ public class ModelCategory {
     private Integer status;
     @Entity.Column("`order_num`")
     private Integer orderNum;
+    @Entity.Column("`attr_ids`")
+    private Integer attrIds;
     private Boolean haschild;
 
     public String getCode() {

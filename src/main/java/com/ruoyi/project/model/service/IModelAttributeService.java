@@ -29,7 +29,7 @@ public interface IModelAttributeService
      * @param attribute 模型属性
      * @return 模型属性集合
      */
-     List<Attribute> selectModelAttributeList(Attribute attribute, Consumer<Example<Attribute>>...consumers);
+     List<Attribute> selectModelAttributeList(Attribute attribute);
 
     /**
      * 新增模型属性

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.model.mapper.ModelAttributeMapper">
+    <resultMap id="reuslt" type="com.ruoyi.project.model.domain.Attribute">
+        <result column="attr_id" property="attrId"/>
+        <result column="attr_name" property="attrName"/>
+        <result column="attr_group" property="attrGroup"/>
+        <result column="attr_type" property="attrType"/>
+        <result column="attr_values" property="attrValues" typeHandler="com.ruoyi.framework.config.mybatis.FastjsonArrayHandler"/>
+        <result column="attr_icon" property="attrIcon"/>
+        <result column="attr_code" property="attrCode"/>
+        <result column="attr_special" property="attrApecial"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <select id="list" resultMap="reuslt">
+        select  attr_id, attr_name, attr_icon, attr_type, attr_values, create_time,
+        create_by, update_time, update_by, attr_code, attr_group, attr_special
+        from attribute
+        <where>
+            <if test="attrApecial != null and attrApecial != ''"> attr_special =#{attrApecial}</if>
+            <if test="attrGroup != null and attrGroup != ''"> and attr_group =#{attrGroup}</if>
+            <if test="attrType != null and attrType != ''"> and attr_type =#{attrType}</if>
+            <if test="attrName != null and attrName != ''"> and attr_name like concat('%',trim(#{attrName}),'%') </if>
+            <if test="attrCode != null and attrCode != ''"> and attr_code like concat('%',trim(#{attrCode}),'%') </if>
+            <if test="modelCateId != null">
+                and ( attr_special = '0' or exists(select 1 from model_category  mc where find_in_set(attr_id,mc.attr_ids)))
+            </if>
+        </where>
+        order by attr_id desc
+    </select>
+</mapper>

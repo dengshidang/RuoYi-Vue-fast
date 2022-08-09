@@ -48,25 +48,8 @@ public class ModelAttributeServiceImpl implements IModelAttributeService {
      * @return 模型属性
      */
     @Override
-    public List<Attribute> selectModelAttributeList(Attribute attribute, Consumer<Example<Attribute>>...consumers) {
-        Example<Attribute> example = new Example<>();
-        Example.Criteria<Attribute> criteria = example.createCriteria();
-        if (StringUtils.isNotEmpty(attribute.getAttrName())) {
-            criteria.andLike(Attribute::getAttrName, attribute.getAttrName());
-        }
-        if (StringUtils.isNotEmpty(attribute.getAttrCode())) {
-            criteria.andLike(Attribute::getAttrCode, attribute.getAttrCode());
-        }
-        if (StringUtils.isNotEmpty(attribute.getAttrType())) {
-            criteria.andEqualTo(Attribute::getAttrType, attribute.getAttrType());
-        }
-        if (StringUtils.isNotEmpty(attribute.getAttrGroup())) {
-            criteria.andEqualTo(Attribute::getAttrGroup, attribute.getAttrGroup());
-        }
-        for (Consumer<Example<Attribute>> consumer : consumers) {
-            consumer.accept(example);
-        }
-        return modelAttributeMapper.selectByExample(example);
+    public List<Attribute> selectModelAttributeList(Attribute attribute) {
+        return modelAttributeMapper.list(attribute);
     }
 
     /**

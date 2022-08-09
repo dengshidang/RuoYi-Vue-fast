@@ -38,13 +38,13 @@ public class AttributeController extends BaseController
     public TableDataInfo list(Attribute attribute)
     {
         startPage();
-        List<Attribute> list = modelAttributeService.selectModelAttributeList(attribute,(ex)->ex.orderByDesc(Attribute::getAttrId));
+        List<Attribute> list = modelAttributeService.selectModelAttributeList(attribute);
         return getDataTable(list);
     }
     @GetMapping("/all")
     public AjaxResult all(Attribute attribute)
     {
-        return AjaxResult.success(modelAttributeService.selectModelAttributeList(attribute,(ex)->ex.orderByAsc(Attribute::getAttrId)));
+        return AjaxResult.success(modelAttributeService.selectModelAttributeList(attribute));
     }
 
     /**
@@ -55,7 +55,7 @@ public class AttributeController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, Attribute attribute)
     {
-        List<Attribute> list = modelAttributeService.selectModelAttributeList(attribute,(ex)->ex.orderByDesc(Attribute::getAttrId));
+        List<Attribute> list = modelAttributeService.selectModelAttributeList(attribute);
         ExcelUtil<Attribute> util = new ExcelUtil<Attribute>(Attribute.class);
         util.exportExcel(response, list, "模型属性数据");
     }

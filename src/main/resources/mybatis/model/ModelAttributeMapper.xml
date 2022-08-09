@@ -11,7 +11,7 @@
         <result column="attr_values" property="attrValues" typeHandler="com.ruoyi.framework.config.mybatis.FastjsonArrayHandler"/>
         <result column="attr_icon" property="attrIcon"/>
         <result column="attr_code" property="attrCode"/>
-        <result column="attr_special" property="attrApecial"/>
+        <result column="attr_special" property="attrSpecial"/>
         <result column="create_by" property="createBy"/>
         <result column="update_by" property="updateBy"/>
         <result column="update_time" property="updateTime"/>
@@ -22,13 +22,13 @@
         create_by, update_time, update_by, attr_code, attr_group, attr_special
         from attribute
         <where>
-            <if test="attrApecial != null and attrApecial != ''"> attr_special =#{attrApecial}</if>
+            <if test="attrSpecial != null and attrSpecial != ''"> attr_special =#{attrSpecial}</if>
             <if test="attrGroup != null and attrGroup != ''"> and attr_group =#{attrGroup}</if>
             <if test="attrType != null and attrType != ''"> and attr_type =#{attrType}</if>
             <if test="attrName != null and attrName != ''"> and attr_name like concat('%',trim(#{attrName}),'%') </if>
             <if test="attrCode != null and attrCode != ''"> and attr_code like concat('%',trim(#{attrCode}),'%') </if>
             <if test="modelCateId != null">
-                and ( attr_special = '0' or exists(select 1 from model_category  mc where find_in_set(attr_id,mc.attr_ids)))
+                and ( attr_special = '0' or exists(select 1 from model_category  mc where find_in_set(attr_id,mc.attr_ids) and mc.model_cate_id = #{modelCateId}))
             </if>
         </where>
         order by attr_id desc

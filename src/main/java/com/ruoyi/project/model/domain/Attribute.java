@@ -36,7 +36,6 @@ public class Attribute implements Serializable
     @NotBlank
     private String attrGroup;
 
-    @NotBlank
     @Entity.Column(value = "attr_type")
     private String attrType;
     @Entity.Column(value = "attr_values",typeHandler = FastjsonArrayHandler.class)
@@ -55,7 +54,7 @@ public class Attribute implements Serializable
     /** special attr */
     @Excel(name = "专用属性：和分类挂钩")
     @Entity.Column(value = "attr_special")
-    private String attrApecial;
+    private String attrSpecial;
     private String createBy;
     private String updateBy;
     private Date updateTime;

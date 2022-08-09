@@ -6,15 +6,14 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.project.model.domain.Attribute;
 import com.ruoyi.project.model.mapper.ModelAttributeMapper;
+import com.ruoyi.project.model.mapper.ModelCategoryMapper;
 import com.ruoyi.project.model.mapper.ModelCodeMapper;
 import com.ruoyi.project.model.service.IModelAttributeService;
-import io.mybatis.mapper.example.Example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * 模型属性Service业务层处理
@@ -28,6 +27,9 @@ public class ModelAttributeServiceImpl implements IModelAttributeService {
     private ModelAttributeMapper modelAttributeMapper;
     @Autowired
     ModelCodeMapper modelCodeMapper;
+
+    @Autowired
+    ModelCategoryMapper modelCategoryMapper;
 
     /**
      * 查询模型属性
@@ -103,7 +105,7 @@ public class ModelAttributeServiceImpl implements IModelAttributeService {
     public boolean candelete(ECategoryGroup group, Integer  modelAttrId) {
         switch (group) {
             case MODEL:
-                return modelCodeMapper.existsByAttrId(modelAttrId) < 1;
+                return modelCodeMapper.existsByAttrId(modelAttrId) < 1  && modelCategoryMapper.existsByAttrId(modelAttrId) < 1;
             // todo:补全
 //            case PROD:
 //                break;

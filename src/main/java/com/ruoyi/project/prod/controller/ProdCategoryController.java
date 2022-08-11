@@ -26,16 +26,16 @@ import java.util.List;
 public class ProdCategoryController extends BaseController
 {
     @Autowired
-    private IModelCategoryService modelCategoryService;
+    private IProdCategoryService prodCategoryService;
 
     /**
      * 查询产品分类列表
      */
     @PreAuthorize("@ss.hasPermi('prod:category:list')")
     @GetMapping("/list")
-    public AjaxResult list(ModelCategory modelCategory)
+    public AjaxResult list(ProdCategory prodCategory)
     {
-        List<ModelCategory> list = modelCategoryService.list(modelCategory);
+        List<ProdCategory> list = prodCategoryService.list(ProdCategory);
         Integer modelCateId = modelCategory.getModelCateId();
         //list 转成tree
        return AjaxResult.success(TreeUtil.toTree(list, StringUtils.isNull(modelCateId)?0:modelCateId,ModelCategory::getParentId,ModelCategory::getModelCateId,ModelCategory::getOrderNum,ModelCategory::setChildren));
@@ -54,7 +54,7 @@ public class ProdCategoryController extends BaseController
     }
     @PreAuthorize("@ss.hasPermi('prod:category:edit')")
     @GetMapping(value = "/usedInterface")
-    public AjaxResult usedInterface(ModelCategory modelCategory)
+    public AjaxResult usedInterface(ProdCategory prodCategory)
     {
         return AjaxResult.success(modelCategoryService.usedInterfaceCode(modelCategory.getModelCateId(),modelCategory.getInterfaceCode()));
     }
@@ -65,7 +65,7 @@ public class ProdCategoryController extends BaseController
     @PreAuthorize("@ss.hasPermi('prod:category:add')")
     @Log(title = "产品分类", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody @Validated  ModelCategory modelCategory)
+    public AjaxResult add(@RequestBody @Validated  ProdCategory prodCategory)
     {
         return toAjax(modelCategoryService.add(modelCategory));
     }
@@ -76,7 +76,7 @@ public class ProdCategoryController extends BaseController
     @PreAuthorize("@ss.hasPermi('prod:category:edit')")
     @Log(title = "产品分类", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody @Validated ModelCategory modelCategory)
+    public AjaxResult edit(@RequestBody @Validated ProdCategory prodCategory)
     {
         return toAjax(modelCategoryService.edit(modelCategory));
     }

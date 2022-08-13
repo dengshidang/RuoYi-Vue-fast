@@ -8,6 +8,8 @@ import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.model.domain.ModelCategory;
 import com.ruoyi.project.model.service.IModelCategoryService;
+import com.ruoyi.project.prod.domain.ProdCategory;
+import com.ruoyi.project.prod.service.IProdCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -35,11 +37,9 @@ public class ProdCategoryController extends BaseController
     @GetMapping("/list")
     public AjaxResult list(ProdCategory prodCategory)
     {
-        List<ProdCategory> list = prodCategoryService.list(ProdCategory);
-        Integer modelCateId = modelCategory.getModelCateId();
-        //list 转成tree
-       return AjaxResult.success(TreeUtil.toTree(list, StringUtils.isNull(modelCateId)?0:modelCateId,ModelCategory::getParentId,ModelCategory::getModelCateId,ModelCategory::getOrderNum,ModelCategory::setChildren));
-//       return AjaxResult.success(list);
+        List<ProdCategory> list = prodCategoryService.list(prodCategory);
+        Integer prodCateId = prodCategory.getProdCateId();
+       return AjaxResult.success(TreeUtil.toTree(list, StringUtils.isNull(prodCateId)?0:prodCateId,ProdCategory::getParentId,ProdCategory::getProdCateId,ProdCategory::getOrderNum,ProdCategory::setChildren));
     }
 
 
@@ -47,17 +47,12 @@ public class ProdCategoryController extends BaseController
      * 获取产品分类详细信息
      */
     @PreAuthorize("@ss.hasPermi('prod:category:query')")
-    @GetMapping(value = "/{modelCateId}")
-    public AjaxResult getInfo(@PathVariable("modelCateId") Integer modelCateId)
+    @GetMapping(value = "/{prodCateId}")
+    public AjaxResult getInfo(@PathVariable("prodCateId") Integer prodCateId)
     {
-        return AjaxResult.success(modelCategoryService.getInfo(modelCateId));
+        return AjaxResult.success(prodCategoryService.getInfo(prodCateId));
     }
-    @PreAuthorize("@ss.hasPermi('prod:category:edit')")
-    @GetMapping(value = "/usedInterface")
-    public AjaxResult usedInterface(ProdCategory prodCategory)
-    {
-        return AjaxResult.success(modelCategoryService.usedInterfaceCode(modelCategory.getModelCateId(),modelCategory.getInterfaceCode()));
-    }
+
 
     /**
      * 新增产品分类
@@ -67,7 +62,7 @@ public class ProdCategoryController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody @Validated  ProdCategory prodCategory)
     {
-        return toAjax(modelCategoryService.add(modelCategory));
+        return toAjax(prodCategoryService.add(prodCategory));
     }
 
     /**
@@ -78,7 +73,7 @@ public class ProdCategoryController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody @Validated ProdCategory prodCategory)
     {
-        return toAjax(modelCategoryService.edit(modelCategory));
+        return toAjax(prodCategoryService.edit(prodCategory));
     }
 
     /**
@@ -86,9 +81,9 @@ public class ProdCategoryController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('prod:category:remove')")
     @Log(title = "产品分类", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{modelCateIds}")
-    public AjaxResult remove(@PathVariable Integer[] modelCateIds)
+	@DeleteMapping("/{prodCateIds}")
+    public AjaxResult remove(@PathVariable Integer[] prodCateIds)
     {
-        return toAjax(modelCategoryService.delete(modelCateIds));
+        return toAjax(prodCategoryService.delete(prodCateIds));
     }
 }

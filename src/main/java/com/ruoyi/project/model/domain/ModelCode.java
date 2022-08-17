@@ -24,6 +24,9 @@ public class ModelCode
     @Entity.Column(id = true)
     @Excel(name = "模型编码")
     private String modelCode;
+    @Entity.Column("model_name")
+    @Excel(name = "模型名称")
+    private String modelName;
 
     /** 分类ID */
     @Entity.Column("model_cate_id")

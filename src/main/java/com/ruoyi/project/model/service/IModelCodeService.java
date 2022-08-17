@@ -69,9 +69,11 @@ public interface IModelCodeService
      * @param modelCodes
      * @return
      */
+    @Deprecated
     boolean saveToGroup(String[] modelCodes);
     /**
      * 解除组合
      */
+    @Deprecated
     boolean deleteGroup(List<String> modelCodes);
 }

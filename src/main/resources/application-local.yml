@@ -78,3 +78,9 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+
+oss:
+  local:
+    base-path: D:/ruoyi/uploadPath
+    enable: true
+

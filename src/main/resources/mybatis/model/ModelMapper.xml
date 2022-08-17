@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.model.mapper.ModelMapper">
+
+    <resultMap type="Model" id="ModelResult">
+        <result property="modelId"    column="model_id"    />
+        <result property="modelCode"    column="model_code"    />
+        <result property="modelName"    column="model_name"    />
+        <result property="cateId"    column="cate_id"    />
+        <result property="modelImg"    column="model_img"    />
+        <result property="modelIcon"    column="model_icon"    />
+        <result property="cateName"    column="cate_name"    />
+        <result property="attrList"    column="attr_list"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectModelVo">
+        select model_id, model_code, model_name, cate_id, model_img, model_icon, cate_name, attr_list, create_by, create_time, update_by, update_time from model
+    </sql>
+
+    <select id="selectModelList" parameterType="Model" resultMap="ModelResult">
+        <include refid="selectModelVo"/>
+        <where>
+            <if test="modelCode != null  and modelCode != ''"> and model_code = #{modelCode}</if>
+            <if test="modelName != null  and modelName != ''"> and model_name like concat('%', #{modelName}, '%')</if>
+            <if test="cateName != null  and cateName != ''"> and cate_name like concat('%', #{cateName}, '%')</if>
+            <if test="attrList != null  and attrList != ''"> and attr_list = #{attrList}</if>
+        </where>
+    </select>
+
+    <select id="selectModelByModelId" parameterType="Integer" resultMap="ModelResult">
+        <include refid="selectModelVo"/>
+        where model_id = #{modelId}
+    </select>
+
+    <insert id="insertModel" parameterType="Model" useGeneratedKeys="true" keyProperty="modelId">
+        insert into model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modelCode != null and modelCode != ''">model_code,</if>
+            <if test="modelName != null and modelName != ''">model_name,</if>
+            <if test="cateId != null">cate_id,</if>
+            <if test="modelImg != null">model_img,</if>
+            <if test="modelIcon != null">model_icon,</if>
+            <if test="cateName != null">cate_name,</if>
+            <if test="attrList != null">attr_list,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modelCode != null and modelCode != ''">#{modelCode},</if>
+            <if test="modelName != null and modelName != ''">#{modelName},</if>
+            <if test="cateId != null">#{cateId},</if>
+            <if test="modelImg != null">#{modelImg},</if>
+            <if test="modelIcon != null">#{modelIcon},</if>
+            <if test="cateName != null">#{cateName},</if>
+            <if test="attrList != null">#{attrList},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateModel" parameterType="Model">
+        update model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="modelCode != null and modelCode != ''">model_code = #{modelCode},</if>
+            <if test="modelName != null and modelName != ''">model_name = #{modelName},</if>
+            <if test="cateId != null">cate_id = #{cateId},</if>
+            <if test="modelImg != null">model_img = #{modelImg},</if>
+            <if test="modelIcon != null">model_icon = #{modelIcon},</if>
+            <if test="cateName != null">cate_name = #{cateName},</if>
+            <if test="attrList != null">attr_list = #{attrList},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where model_id = #{modelId}
+    </update>
+
+    <delete id="deleteModelByModelId" parameterType="Integer">
+        delete from model where model_id = #{modelId}
+    </delete>
+
+    <delete id="deleteModelByModelIds" parameterType="String">
+        delete from model where model_id in
+        <foreach item="modelId" collection="array" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </delete>
+</mapper>

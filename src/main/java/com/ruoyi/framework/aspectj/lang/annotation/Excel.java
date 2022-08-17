@@ -11,7 +11,7 @@ import com.ruoyi.common.utils.poi.ExcelHandlerAdapter;
 
 /**
  * 自定义导出Excel数据注解
- * 
+ *
  * @author ruoyi
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -147,6 +147,8 @@ public @interface Excel
      * 字段类型（0：导出导入；1：仅导出；2：仅导入）
      */
     Type type() default Type.ALL;
+
+    int[] merge() default {};
 
     public enum Type
     {

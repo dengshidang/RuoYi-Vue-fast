@@ -1,5 +1,7 @@
 package com.ruoyi.project.model.service.impl;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -107,6 +109,7 @@ public class ModelCodeServiceImpl implements IModelCodeService {
 
     public boolean exists(ModelCode modelCode) {
         return modelCodeMapper.countByExample(modelCodeMapper.wrapper()
+                .eq(StringUtils.isNotEmpty(modelCode.getModelName()), ModelCode::getModelName, modelCode.getModelName())
                 .ne(StringUtils.isNotEmpty(modelCode.getModelCode()), ModelCode::getModelCode, modelCode.getModelCode())
                 .eq(ObjectUtils.isNotEmpty(modelCode.getModelCateId()), ModelCode::getModelCateId, modelCode.getModelCateId())
                 .eq(StringUtils.isNotEmpty(modelCode.getInterfaceCode()), ModelCode::getInterfaceCode, modelCode.getInterfaceCode())
@@ -123,24 +126,23 @@ public class ModelCodeServiceImpl implements IModelCodeService {
      */
     @Override
     public int updateModelCode(ModelCode modelCode) {
-        ModelCode dbmodelCode = modelCodeMapper.selectByPrimaryKey(modelCode.getModelCode()).orElseThrow(() -> new ServiceException("记录不存在或已删除"));
         modelCode.setUpdateTime(DateUtils.getNowDate());
         verify(modelCode);
-        // 组合码
-        String modelGroup = dbmodelCode.getModelGroup();
-        if(StringUtils.isNotEmpty(modelGroup)){
-            if(StringUtils.isNotEmpty(modelCode.getModelGroup())){
-                String[] grouparr = modelCode.getModelGroup().split(DOUHAO.getSeparator());
-                if(grouparr.length<2){
-                    // 清除组合码
-                    modelCode.setModelGroup("");
-                    List<String> list = Stream.of(modelGroup.split(DOUHAO.getSeparator())).collect(Collectors.toList());
-                    list.removeIf(f->f.equals(modelCode.getModelCode()));
-                    // 解除
-                    deleteGroup(list);
-                }
-            }
-        }
+//        // 组合码
+//        String modelGroup = dbmodelCode.getModelGroup();
+//        if (StringUtils.isNotEmpty(modelGroup)) {
+//            if (StringUtils.isNotEmpty(modelCode.getModelGroup())) {
+//                String[] grouparr = modelCode.getModelGroup().split(DOUHAO.getSeparator());
+//                if (grouparr.length < 2) {
+//                    // 清除组合码
+//                    modelCode.setModelGroup("");
+//                    List<String> list = Stream.of(modelGroup.split(DOUHAO.getSeparator())).collect(Collectors.toList());
+//                    list.removeIf(f -> f.equals(modelCode.getModelCode()));
+//                    // 解除
+//                    deleteGroup(list);
+//                }
+//            }
+//        }
         return modelCodeMapper.updateByPrimaryKey(modelCode);
     }
 
@@ -170,13 +172,14 @@ public class ModelCodeServiceImpl implements IModelCodeService {
     }
 
     @Override
+    @Deprecated
     public boolean saveToGroup(String[] modelCodes) {
-        if(ObjectUtils.isEmpty(modelCodes) || modelCodes.length < 2) throw  new ServiceException("至少添加两条记录");
+        if (ObjectUtils.isEmpty(modelCodes) || modelCodes.length < 2) throw new ServiceException("至少添加两条记录");
         // 是否存在
         for (String code : modelCodes) {
             int exists = modelCodeMapper.existsByModelGroup(code);
-            if(exists > 0){
-                throw  new ServiceException("请勿重复添加分组:"+code);
+            if (exists > 0) {
+                throw new ServiceException("请勿重复添加分组:" + code);
             }
         }
         // 相同的接口才能组合
@@ -184,17 +187,19 @@ public class ModelCodeServiceImpl implements IModelCodeService {
         List<String> codes = Arrays.stream(modelCodes).collect(Collectors.toList());
         String modelgroup = Arrays.stream(modelCodes).collect(Collectors.joining(","));
         modelCode.setModelGroup(modelgroup);
-        return  modelCodeMapper.updateByExampleSelective(modelCode,modelCodeMapper.wrapper()
+        return modelCodeMapper.updateByExampleSelective(modelCode, modelCodeMapper.wrapper()
                 .in(ModelCode::getModelCode, codes)
                 .example()) > 0;
 
     }
+
     @Override
+    @Deprecated
     public boolean deleteGroup(List<String> modelCodes) {
-        if(ObjectUtils.isEmpty(modelCodes)) return false;
+        if (ObjectUtils.isEmpty(modelCodes)) return false;
         ModelCode modelCode = new ModelCode();
         modelCode.setModelGroup("");
-        return  modelCodeMapper.updateByExampleSelective(modelCode,modelCodeMapper.wrapper()
+        return modelCodeMapper.updateByExampleSelective(modelCode, modelCodeMapper.wrapper()
                 .in(ModelCode::getModelCode, modelCodes)
                 .example()) > 0;
 

@@ -1,13 +1,14 @@
 package com.ruoyi.framework.aspectj.lang.annotation;
 
+import com.ruoyi.common.utils.poi.ExcelHandlerAdapter;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.math.BigDecimal;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import com.ruoyi.common.utils.poi.ExcelHandlerAdapter;
 
 /**
  * 自定义导出Excel数据注解
@@ -37,7 +38,7 @@ public @interface Excel
      * 如果是字典类型，请设置字典的type值 (如: sys_user_sex)
      */
     public String dictType() default "";
-
+    public int mergeLevel() default 1;
     /**
      * 读取内容转表达式 (如: 0=男,1=女,2=未知)
      */

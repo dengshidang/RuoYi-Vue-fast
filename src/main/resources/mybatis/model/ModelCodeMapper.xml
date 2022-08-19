@@ -44,7 +44,7 @@
                     '${@com.ruoyi.common.enums.ESeparator@DEFAULT.getSeparator()}',
                     lpad(#{interfaceId}, 4, 0)
                 ),
-            #{modelName}
+            #{modelName},
             #{modelCateId},
             #{interfaceCode},
             #{interfaceName},

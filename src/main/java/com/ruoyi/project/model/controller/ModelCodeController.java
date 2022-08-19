@@ -23,8 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/model/code")
-public class ModelCodeController extends BaseController
-{
+public class ModelCodeController extends BaseController {
     @Autowired
     private IModelCodeService modelCodeService;
 
@@ -33,8 +32,7 @@ public class ModelCodeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:code:list')")
     @GetMapping("/list")
-    public TableDataInfo list(ModelCode modelCode)
-    {
+    public TableDataInfo list(ModelCode modelCode) {
         startPage();
         List<ModelCode> list = modelCodeService.selectModelCodeList(modelCode);
         return getDataTable(list);
@@ -47,9 +45,30 @@ public class ModelCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:code:export')")
     @Log(title = "模型编码", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, ModelCode modelCode)
-    {
+    public void export(HttpServletResponse response, ModelCode modelCode) {
         List<ModelCode> list = modelCodeService.selectModelCodeList(modelCode);
+//        if (ObjectUtils.isNotEmpty(list)) {
+//            list.parallelStream().forEach(f -> {
+//                List<Attribute> modelAttrs = f.getModelAttrs();
+//                if (ObjectUtils.isNotEmpty(modelAttrs)) {
+//                    AtomicInteger jieshu = new AtomicInteger(1);
+//                    modelAttrs.parallelStream().forEach(d -> {
+//                        if (d.getAttrCode().equals("jieshu")) {
+//                            String attrValue = d.getAttrValue();
+//                            jieshu.set(Integer.parseInt(attrValue));
+//
+//                        }
+//                    });
+//                    List child = new ArrayList();
+//                    for (int i = 0; i < jieshu.get(); i++) {
+//                        Map<String, Object> chuildren = new HashMap<>();
+//                        chuildren.put("modelCodel", f.getModelCode() + "_" + (i + 1));
+//                        child.add(chuildren);
+//                    }
+//                    f.setChildren(child);
+//                }
+//            });
+//        }
         ExcelUtil<ModelCode> util = new ExcelUtil<ModelCode>(ModelCode.class);
         util.exportExcel(response, list, "模型编码数据");
     }
@@ -59,8 +78,7 @@ public class ModelCodeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:code:query')")
     @GetMapping(value = "/{modeCode}")
-    public AjaxResult getInfo(@PathVariable("modeCode") String modeCode)
-    {
+    public AjaxResult getInfo(@PathVariable("modeCode") String modeCode) {
         return AjaxResult.success(modelCodeService.selectModelCodeByModeCode(modeCode));
     }
 
@@ -70,8 +88,7 @@ public class ModelCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:code:add')")
     @Log(title = "模型编码", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody ModelCode modelCode)
-    {
+    public AjaxResult add(@RequestBody ModelCode modelCode) {
         return toAjax(modelCodeService.insertModelCode(modelCode));
     }
 
@@ -81,8 +98,7 @@ public class ModelCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:code:edit')")
     @Log(title = "模型编码", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody ModelCode modelCode)
-    {
+    public AjaxResult edit(@RequestBody ModelCode modelCode) {
         return toAjax(modelCodeService.updateModelCode(modelCode));
     }
 
@@ -91,16 +107,14 @@ public class ModelCodeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:code:remove')")
     @Log(title = "模型编码", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{modeCodes}")
-    public AjaxResult remove(@PathVariable String[] modeCodes)
-    {
+    @DeleteMapping("/{modeCodes}")
+    public AjaxResult remove(@PathVariable String[] modeCodes) {
         return toAjax(modelCodeService.deleteModelCodeByModeCodes(modeCodes));
     }
 
     @PreAuthorize("@ss.hasPermi('model:code:edit')")
     @GetMapping("/saveToGroup/{modelCodes}")
-    public AjaxResult saveToGroup(@PathVariable String[] modelCodes)
-    {
+    public AjaxResult saveToGroup(@PathVariable String[] modelCodes) {
         return toAjax(modelCodeService.saveToGroup(modelCodes));
     }
 

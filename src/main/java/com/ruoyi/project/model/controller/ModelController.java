@@ -2,6 +2,7 @@ package com.ruoyi.project.model.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.page.TableDataInfo;
 
+
 /**
  * 模型Controller
  *
@@ -29,18 +31,18 @@ import com.ruoyi.framework.web.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/model/3d")
-public class ModelController extends BaseController
-{
+public class ModelController extends BaseController {
+    private static final String FILE_DELIMETER = ",";
     @Autowired
     private IModelService modelService;
+
 
     /**
      * 查询模型列表
      */
     @PreAuthorize("@ss.hasPermi('model:model:list')")
     @GetMapping("/list")
-    public TableDataInfo list(Model model)
-    {
+    public TableDataInfo list(Model model) {
         startPage();
         List<Model> list = modelService.selectModelList(model);
         return getDataTable(list);
@@ -52,8 +54,7 @@ public class ModelController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:model:export')")
     @Log(title = "模型", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Model model)
-    {
+    public void export(HttpServletResponse response, Model model) {
         List<Model> list = modelService.selectModelList(model);
         ExcelUtil<Model> util = new ExcelUtil<Model>(Model.class);
         util.exportExcel(response, list, "模型数据");
@@ -64,8 +65,7 @@ public class ModelController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:model:query')")
     @GetMapping(value = "/{modelId}")
-    public AjaxResult getInfo(@PathVariable("modelId") Integer modelId)
-    {
+    public AjaxResult getInfo(@PathVariable("modelId") Integer modelId) {
         return AjaxResult.success(modelService.selectModelByModelId(modelId));
     }
 
@@ -75,8 +75,7 @@ public class ModelController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:model:add')")
     @Log(title = "模型", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Model model)
-    {
+    public AjaxResult add(@RequestBody Model model) {
         return toAjax(modelService.insertModel(model));
     }
 
@@ -86,8 +85,7 @@ public class ModelController extends BaseController
     @PreAuthorize("@ss.hasPermi('model:model:edit')")
     @Log(title = "模型", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Model model)
-    {
+    public AjaxResult edit(@RequestBody Model model) {
         return toAjax(modelService.updateModel(model));
     }
 
@@ -96,9 +94,8 @@ public class ModelController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('model:model:remove')")
     @Log(title = "模型", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{modelIds}")
-    public AjaxResult remove(@PathVariable Integer[] modelIds)
-    {
+    @DeleteMapping("/{modelIds}")
+    public AjaxResult remove(@PathVariable Integer[] modelIds) {
         return toAjax(modelService.deleteModelByModelIds(modelIds));
     }
 }

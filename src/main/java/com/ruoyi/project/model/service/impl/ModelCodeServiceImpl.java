@@ -1,7 +1,5 @@
 package com.ruoyi.project.model.service.impl;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -23,8 +21,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.ruoyi.common.enums.ESeparator.DOUHAO;
 
 /**
  * 模型编码Service业务层处理
@@ -109,7 +105,7 @@ public class ModelCodeServiceImpl implements IModelCodeService {
 
     public boolean exists(ModelCode modelCode) {
         return modelCodeMapper.countByExample(modelCodeMapper.wrapper()
-                .eq(StringUtils.isNotEmpty(modelCode.getModelName()), ModelCode::getModelName, modelCode.getModelName())
+//                .eq(StringUtils.isNotEmpty(modelCode.getModelName()), ModelCode::getModelName, modelCode.getModelName())
                 .ne(StringUtils.isNotEmpty(modelCode.getModelCode()), ModelCode::getModelCode, modelCode.getModelCode())
                 .eq(ObjectUtils.isNotEmpty(modelCode.getModelCateId()), ModelCode::getModelCateId, modelCode.getModelCateId())
                 .eq(StringUtils.isNotEmpty(modelCode.getInterfaceCode()), ModelCode::getInterfaceCode, modelCode.getInterfaceCode())

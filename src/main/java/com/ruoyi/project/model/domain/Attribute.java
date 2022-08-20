@@ -40,7 +40,7 @@ public class Attribute implements Serializable
     private String attrType;
     @Entity.Column(value = "attr_values",typeHandler = FastjsonArrayHandler.class)
     private List<AttrValue> attrValues;
-    private String attrValue;
+    private  transient  String attrValue;
 
     /** 模型属性图标 */
     @Excel(name = "模型属性图标")

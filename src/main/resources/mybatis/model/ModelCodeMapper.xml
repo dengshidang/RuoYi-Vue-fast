@@ -119,6 +119,7 @@
             <if test="parentCateName != null and parentCateName != ''">
                 and mc2.parent_id in (select model_cate_id from model_category mc3 where mc3.model_cate_name  like concat(trim(#{modelCateName}),'%') )
             </if>
+            )
         </where>
         <if test="used != null and used != '' ">
             having  used = #{used}

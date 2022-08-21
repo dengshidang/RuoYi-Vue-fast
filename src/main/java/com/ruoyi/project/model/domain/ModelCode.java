@@ -79,6 +79,7 @@ public class ModelCode {
     private String remark;
     @Excel(name = "模型分类", merge = 5)
     private transient String modelCateName;
+    private transient String parentCateName;
     private transient String used;
 
     public ModelCode copy(int i) {

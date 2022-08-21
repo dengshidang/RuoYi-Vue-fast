@@ -57,6 +57,14 @@ public class ModelCodeServiceImpl implements IModelCodeService {
      */
     @Override
     public List<ModelCode> selectModelCodeList(ModelCode modelCode) {
+        String modelCateName = modelCode.getModelCateName();
+       if(StringUtils.isNotEmpty(modelCateName)){
+            String[] split = modelCateName.split("/");
+            if(split.length > 1){
+                modelCode.setParentCateName(split[0]);
+                modelCode.setModelCateName(split[1]);
+            }
+        }
         List<ModelCode> dbmodelCodes = modelCodeMapper.list(modelCode);
         if (StringUtils.isNotEmpty(dbmodelCodes)) {
             ModelCategory category = new ModelCategory();

@@ -107,9 +107,17 @@
             <if test="modelCode != null and modelCode != ''">
                 and mc.model_code like concat(trim(#{modelCode}),'%')
             </if>
+            <if test="modelName != null and modelName != ''">
+                and mc.model_name like concat(trim(#{modelName}),'%')
+            </if>
+            and exists(select 1 from model_category mc2  where
+            1 = 1
             <if test="modelCateName != null and modelCateName != ''">
-               and exists(select 1 from model_category mc2  where mc.model_cate_id = mc2.model_cate_id
-                and mc2.model_cate_name like concat(trim(#{modelCateName}),'%'))
+                and mc.model_cate_id = mc2.model_cate_id
+                and mc2.model_cate_name like concat(trim(#{modelCateName}),'%')
+            </if>
+            <if test="parentCateName != null and parentCateName != ''">
+                and mc2.parent_id in (select model_cate_id from model_category mc3 where mc3.model_cate_name  like concat(trim(#{modelCateName}),'%') )
             </if>
         </where>
         <if test="used != null and used != '' ">

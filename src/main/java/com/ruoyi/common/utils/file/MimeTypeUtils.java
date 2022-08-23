@@ -2,7 +2,7 @@ package com.ruoyi.common.utils.file;
 
 /**
  * 媒体类型工具类
- * 
+ *
  * @author ruoyi
  */
 public class MimeTypeUtils
@@ -16,7 +16,7 @@ public class MimeTypeUtils
     public static final String IMAGE_BMP = "image/bmp";
 
     public static final String IMAGE_GIF = "image/gif";
-    
+
     public static final String[] IMAGE_EXTENSION = { "bmp", "gif", "jpg", "jpeg", "png" };
 
     public static final String[] FLASH_EXTENSION = { "swf", "flv" };
@@ -28,7 +28,7 @@ public class MimeTypeUtils
 
     public static final String[] DEFAULT_ALLOWED_EXTENSION = {
             // 图片
-            "bmp", "gif", "jpg", "jpeg", "png",
+            "bmp", "gif", "jpg", "jpeg", "png","bin","gltf",
             // word excel powerpoint
             "doc", "docx", "xls", "xlsx", "ppt", "pptx", "html", "htm", "txt",
             // 压缩文件

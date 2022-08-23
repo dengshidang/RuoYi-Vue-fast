@@ -1,39 +1,32 @@
 package com.ruoyi.project.model.controller;
 
+import com.ruoyi.common.enums.ESeparator;
+import com.ruoyi.common.utils.file.FileUploadUtils;
+import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.framework.aspectj.lang.annotation.Log;
+import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
+import com.ruoyi.framework.config.RuoYiConfig;
+import com.ruoyi.framework.config.ServerConfig;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.web.controller.BaseController;
+import com.ruoyi.framework.web.domain.AjaxResult;
+import com.ruoyi.framework.web.page.TableDataInfo;
+import com.ruoyi.project.model.domain.ModelUpload;
+import com.ruoyi.project.model.service.IModelUploadService;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.servlet.http.HttpServletResponse;
-
-import com.ruoyi.common.enums.ESeparator;
-import com.ruoyi.common.utils.file.FileUploadUtils;
-import com.ruoyi.common.utils.file.FileUtils;
-import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.framework.config.RuoYiConfig;
-import com.ruoyi.framework.config.ServerConfig;
-import com.ruoyi.framework.manager.AsyncManager;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.framework.aspectj.lang.annotation.Log;
-import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.project.model.domain.ModelUpload;
-import com.ruoyi.project.model.service.IModelUploadService;
-import com.ruoyi.framework.web.controller.BaseController;
-import com.ruoyi.framework.web.domain.AjaxResult;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.framework.web.page.TableDataInfo;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 素材Controller
@@ -114,15 +107,19 @@ public class ModelUploadController extends BaseController
             String originalFilename = file.getOriginalFilename();
             int indexOf = originalFilename.lastIndexOf(".");
             String pref = originalFilename.substring(0, indexOf);
-            String modelCode = Stream.of(pref.split(separator)[0], pref.split(separator)[1], pref.split(separator)[2], pref.split(separator)[3]).collect(Collectors.joining(separator));
             //构建存储信息
             ModelUpload upload = new ModelUpload();
+            String extension = FilenameUtils.getExtension(fileName);
+            if(extension.equals("gltf")){
+                String modelCode = Stream.of(pref.split(separator)[0], pref.split(separator)[1], pref.split(separator)[2], pref.split(separator)[3]).collect(Collectors.joining(separator));
+                upload.setModelCode(modelCode);
+            }
             upload.setFilePath(fileName);
             upload.setFileName(FileUtils.getName(fileName));
-            upload.setFileType(FilenameUtils.getExtension(fileName));
+            upload.setFileType(extension);
             upload.setOriginalName(originalFilename);
             upload.setSize(file.getSize());
-            upload.setModelCode(modelCode);
+
             uploadList.add(upload);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);

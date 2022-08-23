@@ -44,7 +44,7 @@
                     '${@com.ruoyi.common.enums.ESeparator@DEFAULT.getSeparator()}',
                     lpad(#{interfaceId}, 4, 0)
                 ),
-            #{modelName}
+            #{modelName},
             #{modelCateId},
             #{interfaceCode},
             #{interfaceName},
@@ -72,6 +72,7 @@
     </insert>
     <resultMap type="com.ruoyi.project.model.domain.ModelCode" id="ModelCodeResult">
         <result column="model_code" property="modelCode"/>
+        <result column="model_name" property="modelName"/>
         <result column="model_cate_id" property="modelCateId"/>
         <result column="interface_code" property="interfaceCode"/>
         <result column="used" property="used"/>
@@ -88,7 +89,7 @@
         <result column="remark" property="remark"/>
     </resultMap>
     <select id="list" resultMap="ModelCodeResult">
-        select mc.model_code, model_cate_id, interface_code, model_attr_value,interface_name, interface_id,
+        select mc.model_code,model_name, model_cate_id, interface_code, model_attr_value,interface_name, interface_id,
                model_attrs,model_group,
                model_attr_ids, create_time, update_time, create_by, update_by, remark
             ,exists(select 1 from model m where m.model_code = mc.model_code) as used
@@ -106,10 +107,19 @@
             <if test="modelCode != null and modelCode != ''">
                 and mc.model_code like concat(trim(#{modelCode}),'%')
             </if>
-            <if test="modelCateName != null and modelCateName != ''">
-               and exists(select 1 from model_category mc2  where mc.model_cate_id = mc2.model_cate_id
-                and mc2.model_cate_name like concat(trim(#{modelCateName}),'%'))
+            <if test="modelName != null and modelName != ''">
+                and mc.model_name like concat(trim(#{modelName}),'%')
             </if>
+            and exists(select 1 from model_category mc2  where
+            1 = 1
+            <if test="modelCateName != null and modelCateName != ''">
+                and mc.model_cate_id = mc2.model_cate_id
+                and mc2.model_cate_name like concat(trim(#{modelCateName}),'%')
+            </if>
+            <if test="parentCateName != null and parentCateName != ''">
+                and mc2.parent_id in (select model_cate_id from model_category mc3 where mc3.model_cate_name  like concat(trim(#{modelCateName}),'%') )
+            </if>
+            )
         </where>
         <if test="used != null and used != '' ">
             having  used = #{used}

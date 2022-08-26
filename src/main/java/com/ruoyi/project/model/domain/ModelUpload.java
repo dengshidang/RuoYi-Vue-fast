@@ -38,6 +38,7 @@ public class ModelUpload
     private String fileName;
     private String fileType;
     private String modelCode;
+    private String modelName;
 
     /** 文件唯一id */
     @Excel(name = "文件唯一id")

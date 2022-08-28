@@ -6,7 +6,10 @@ import java.util.stream.Stream;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.project.model.domain.ModelCode;
+import com.ruoyi.project.model.service.IModelCodeService;
 import io.mybatis.service.AbstractService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.project.model.mapper.ModelUploadMapper;
@@ -23,6 +26,8 @@ import com.ruoyi.project.model.service.IModelUploadService;
 public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,ModelUploadMapper> implements IModelUploadService
 {
 
+    @Autowired
+    IModelCodeService modelCodeService;
     /**
      * 查询素材
      *
@@ -93,6 +98,11 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
     @Override
     public boolean insertBatch(List<ModelUpload> uploadList) {
         for (ModelUpload upload : uploadList) {
+            // 查询编码名称
+            ModelCode modelCode = modelCodeService.selectModelCodeByModeCode(upload.getModelCode());
+            if(ObjectUtils.isNotEmpty(modelCode)){
+                upload.setModelName(modelCode.getModelName());
+            }
             super.saveSelective(upload);
         }
         return true;

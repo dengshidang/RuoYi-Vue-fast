@@ -110,6 +110,7 @@ public class ModelUploadController extends BaseController
             //构建存储信息
             ModelUpload upload = new ModelUpload();
             String extension = FilenameUtils.getExtension(fileName);
+            // 模型文件 特殊处理
             if(extension.equals("gltf")){
                 String modelCode = Stream.of(pref.split(separator)[0], pref.split(separator)[1], pref.split(separator)[2], pref.split(separator)[3]).collect(Collectors.joining(separator));
                 upload.setModelCode(modelCode);

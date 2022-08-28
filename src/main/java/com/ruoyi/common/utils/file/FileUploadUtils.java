@@ -1,13 +1,5 @@
 package com.ruoyi.common.utils.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Objects;
-
-import com.ruoyi.project.model.domain.ModelUpload;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.file.FileNameLengthLimitExceededException;
 import com.ruoyi.common.exception.file.FileSizeLimitExceededException;
@@ -16,6 +8,13 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.Seq;
 import com.ruoyi.framework.config.RuoYiConfig;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 /**
  * 文件上传工具类
@@ -124,8 +123,13 @@ public class FileUploadUtils
      */
     public static final String extractFilename(MultipartFile file)
     {
+        String extension = getExtension(file);
+        if(extension.equals("bin")){
+            return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
+                    FilenameUtils.getBaseName(file.getOriginalFilename()),extension);
+        }
         return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
+                FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType),extension);
     }
 
     public static final File getAbsoluteFile(String uploadDir, String fileName) throws IOException

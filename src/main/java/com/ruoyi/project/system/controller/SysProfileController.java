@@ -26,7 +26,7 @@ import com.ruoyi.project.system.service.ISysUserService;
 
 /**
  * 个人信息 业务处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -126,7 +126,7 @@ public class SysProfileController extends BaseController
         if (!file.isEmpty())
         {
             LoginUser loginUser = getLoginUser();
-            String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
+            String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION,true);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar))
             {
                 AjaxResult ajax = AjaxResult.success();

@@ -59,7 +59,7 @@ public class FileUploadUtils
     {
         try
         {
-            return upload(getDefaultBaseDir(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(getDefaultBaseDir(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION,true);
         }
         catch (Exception e)
         {
@@ -75,11 +75,14 @@ public class FileUploadUtils
      * @return 文件名称
      * @throws IOException
      */
-    public static final String upload(String baseDir, MultipartFile file) throws IOException
+    public static final String upload(String baseDir, MultipartFile file) throws IOException{
+        return upload(baseDir,file,true);
+    }
+    public static final String upload(String baseDir, MultipartFile file,boolean rename) throws IOException
     {
         try
         {
-            return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION,rename);
         }
         catch (Exception e)
         {
@@ -99,7 +102,7 @@ public class FileUploadUtils
      * @throws IOException 比如读写文件出错时
      * @throws InvalidExtensionException 文件校验异常
      */
-    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)
+    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension,boolean rename)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
@@ -111,7 +114,7 @@ public class FileUploadUtils
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = extractFilename(file);
+        String fileName = extractFilename(file,rename);
 
         String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
         file.transferTo(Paths.get(absPath));
@@ -121,15 +124,17 @@ public class FileUploadUtils
     /**
      * 编码文件名
      */
-    public static final String extractFilename(MultipartFile file)
+    public static final String extractFilename(MultipartFile file,boolean rename)
     {
         String extension = getExtension(file);
-        if(extension.equals("bin")){
-            return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
-                    FilenameUtils.getBaseName(file.getOriginalFilename()),extension);
+        if(rename){
+            return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
+                    FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType),extension);
+
         }
-        return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType),extension);
+        return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
+                FilenameUtils.getBaseName(file.getOriginalFilename()),extension);
+
     }
 
     public static final File getAbsoluteFile(String uploadDir, String fileName) throws IOException

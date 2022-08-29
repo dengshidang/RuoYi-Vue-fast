@@ -54,6 +54,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
                 .like(StringUtils.isNotEmpty(modelUpload.getFileName()),ModelUpload::getFileName,modelUpload.getFileName())
                 .like(StringUtils.isNotEmpty(modelUpload.getOriginalName()),ModelUpload::getOriginalName,modelUpload.getOriginalName())
                 .eq(StringUtils.isNotEmpty(modelUpload.getFileType()),ModelUpload::getFileType,modelUpload.getFileType())
+                .eq(StringUtils.isNotNull(modelUpload.getHandler()),ModelUpload::getHandler,modelUpload.getHandler())
                 .example().orderByDesc(ModelUpload::getId));
     }
 

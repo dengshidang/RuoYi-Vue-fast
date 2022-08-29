@@ -13,7 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 模型分类Controller
@@ -37,11 +38,8 @@ public class ModelCategoryController extends BaseController
     {
         List<ModelCategory> list = modelCategoryService.list(modelCategory);
         Integer modelCateId = modelCategory.getModelCateId();
-        //list 转成tree
        return AjaxResult.success(TreeUtil.toTree(list, StringUtils.isNull(modelCateId)?0:modelCateId,ModelCategory::getParentId,ModelCategory::getModelCateId,ModelCategory::getOrderNum,ModelCategory::setChildren));
-//       return AjaxResult.success(list);
     }
-
 
     /**
      * 获取模型分类详细信息

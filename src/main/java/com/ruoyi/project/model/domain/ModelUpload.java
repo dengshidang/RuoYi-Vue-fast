@@ -48,4 +48,5 @@ public class ModelUpload
     private Date updateTime;
     private String  createBy;
     private String updateBy;
+    private Boolean handler;
 }

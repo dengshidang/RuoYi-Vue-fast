@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.model.mapper.ModelUploadMapper">
+
+    <insert id="insertBack" parameterType="ModelUpload" >
+        <!--@mbg.generated-->
+        insert into model_upload_back
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="originalName != null">
+                original_name,
+            </if>
+            <if test="filePath != null">
+                file_path,
+            </if>
+            <if test="fileName != null">
+                file_name,
+            </if>
+            <if test="fileMd5 != null">
+                file_md5,
+            </if>
+            <if test="fileType != null">
+                file_type,
+            </if>
+            <if test="handler != null">
+                `handler`,
+            </if>
+            <if test="modelCode != null">
+                model_code,
+            </if>
+            <if test="modelName != null">
+                model_name,
+            </if>
+            <if test="size != null">
+                `size`,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="originalName != null">
+                #{originalName,jdbcType=VARCHAR},
+            </if>
+            <if test="filePath != null">
+                #{filePath,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileMd5 != null">
+                #{fileMd5,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                #{fileType,jdbcType=VARCHAR},
+            </if>
+            <if test="handler != null">
+                #{handler,jdbcType=BOOLEAN},
+            </if>
+            <if test="modelCode != null">
+                #{modelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="modelName != null">
+                #{modelName,jdbcType=VARCHAR},
+            </if>
+            <if test="size != null">
+                #{size,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectBack" resultType="com.ruoyi.project.model.domain.ModelUpload">
+        select original_name, file_path, file_name, file_md5, file_type, handler, model_code,
+        model_name, size, create_time, update_time, create_by, update_by from model_upload_back where file_path = #{filePath}
+    </select>
+
+
+    <update id="updateBack" parameterType="ModelUpload">
+        <!--@mbg.generated-->
+        update model_upload_back
+        <set>
+            <if test="originalName != null">
+                original_name = #{originalName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                file_name = #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileMd5 != null">
+                file_md5 = #{fileMd5,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                file_type = #{fileType,jdbcType=VARCHAR},
+            </if>
+            <if test="handler != null">
+                `handler` = #{handler,jdbcType=BOOLEAN},
+            </if>
+            <if test="modelCode != null">
+                model_code = #{modelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="modelName != null">
+                model_name = #{modelName,jdbcType=VARCHAR},
+            </if>
+            <if test="size != null">
+                `size` = #{size,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where file_path = #{filePath}
+    </update>
+</mapper>

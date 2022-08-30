@@ -17,7 +17,7 @@ import java.util.Date;
  */
 @Data
 @Entity.Table("model_upload")
-public class ModelUpload
+public class  ModelUpload
 {
     private static final long serialVersionUID = 1L;
 

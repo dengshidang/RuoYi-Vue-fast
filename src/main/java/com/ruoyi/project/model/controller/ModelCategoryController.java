@@ -40,6 +40,24 @@ public class ModelCategoryController extends BaseController
         Integer modelCateId = modelCategory.getModelCateId();
        return AjaxResult.success(TreeUtil.toTree(list, StringUtils.isNull(modelCateId)?0:modelCateId,ModelCategory::getParentId,ModelCategory::getModelCateId,ModelCategory::getOrderNum,ModelCategory::setChildren));
     }
+    @PreAuthorize("@ss.hasPermi('model:category:list')")
+    @GetMapping("/option")
+    public AjaxResult option(ModelCategory modelCategory)
+    {
+        if(StringUtils.isNotNull(modelCategory.getParentId())){
+            modelCategory.setParentId(0);
+    }
+        List<ModelCategory> list = modelCategoryService.list(modelCategory);
+        return AjaxResult.success(Optional.ofNullable(list).orElse(Collections.emptyList())
+                .stream().map(m->{
+                    Map<String,Object> map = new HashMap();
+                    map.put("key",m.getCode());
+                    map.put("val",m.getModelCateName());
+                    return map;
+                }).collect(Collectors.toList()));
+
+    }
+
 
     /**
      * 获取模型分类详细信息

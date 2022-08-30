@@ -8,6 +8,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.project.model.domain.ModelCode;
 import com.ruoyi.project.model.service.IModelCodeService;
+import io.mybatis.mapper.example.Example;
 import io.mybatis.service.AbstractService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.project.model.mapper.ModelUploadMapper;
 import com.ruoyi.project.model.domain.ModelUpload;
 import com.ruoyi.project.model.service.IModelUploadService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 素材Service业务层处理
@@ -65,9 +67,26 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertModelUpload(ModelUpload modelUpload)
     {
         modelUpload.setCreateTime(DateUtils.getNowDate());
+        Example<ModelUpload> example = baseMapper.wrapper().eq(ModelUpload::getOriginalName, modelUpload.getOriginalName()).example();
+        List<ModelUpload> dbmodelUploads = baseMapper.selectByExample(example);
+        if(ObjectUtils.isNotEmpty(dbmodelUploads)){
+            ModelUpload dbupload = dbmodelUploads.get(0);
+            modelUpload.setId(dbupload.getId());
+            String filePath = dbupload.getFilePath();
+            //查询备份文件，按每日更新
+            ModelUpload modelBack = this.baseMapper.selectBack(filePath);
+            if(StringUtils.isNotNull(modelBack)){
+                baseMapper.updateBack(dbupload);
+            }else{
+                this.baseMapper.insertBack(dbupload);
+            }
+            modelUpload.setUpdateTime(DateUtils.getNowDate());
+            return this.baseMapper.updateByPrimaryKeySelective(modelUpload);
+        }
         return this.baseMapper.insertSelective(modelUpload);
     }
 

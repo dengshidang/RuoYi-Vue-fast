@@ -1,10 +1,12 @@
 package com.ruoyi.project.model.domain;
 
 
+import com.ruoyi.framework.config.mybatis.FastjsonArrayHandler;
 import io.mybatis.provider.Entity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author dengsd
@@ -38,4 +40,6 @@ public class Model {
     private String updateBy;
     private Date updateTime;
     private Date createTime;
+    @Entity.Column(value = "children",typeHandler = FastjsonArrayHandler.class)
+    private List<Model> children;
 }

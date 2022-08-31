@@ -132,8 +132,7 @@ public class FileUploadUtils
                     FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType),extension);
 
         }
-        return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()),extension);
+        return StringUtils.format("{}",file.getOriginalFilename());
 
     }
 

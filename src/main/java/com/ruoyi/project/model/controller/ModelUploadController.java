@@ -9,6 +9,7 @@ import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
 import com.ruoyi.framework.config.RuoYiConfig;
 import com.ruoyi.framework.config.ServerConfig;
+import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.framework.web.page.TableDataInfo;
@@ -21,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,8 +97,7 @@ public class ModelUploadController extends BaseController
     {
         try {
             // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
-            List<ModelUpload> uploadList = new ArrayList<>();
+            String filePath = RuoYiConfig.getUploadModePath();
             String separator = ESeparator.DEFAULT.getSeparator();
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file,false);
@@ -118,14 +118,17 @@ public class ModelUploadController extends BaseController
             upload.setFileType(extension);
             upload.setOriginalName(originalFilename);
             upload.setSize(file.getSize());
-
-//            uploadList.add(upload);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
             ajax.put("fileName", fileName);
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
-            SpringUtils.getBean(IModelUploadService.class).insertModelUpload(upload);
+            AsyncManager.me().execute(new TimerTask() {
+                @Override
+                public void run() {
+                    SpringUtils.getBean(IModelUploadService.class).insertModelUpload(upload);
+                }
+            });
             return ajax;
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());

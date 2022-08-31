@@ -1,11 +1,8 @@
 package com.ruoyi.project.model.domain;
 
+import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 import io.mybatis.provider.Entity;
 import lombok.Data;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.framework.aspectj.lang.annotation.Excel;
-import com.ruoyi.framework.web.domain.BaseEntity;
 
 import java.util.Date;
 
@@ -48,4 +45,6 @@ public class ModelUpload
     private Date updateTime;
     private String  createBy;
     private String updateBy;
+
+    private Boolean handler;
 }

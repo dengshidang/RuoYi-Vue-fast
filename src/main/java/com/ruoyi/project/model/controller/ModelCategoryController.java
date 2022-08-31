@@ -13,7 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 模型分类Controller
@@ -41,8 +42,22 @@ public class ModelCategoryController extends BaseController
        return AjaxResult.success(TreeUtil.toTree(list, StringUtils.isNull(modelCateId)?0:modelCateId,ModelCategory::getParentId,ModelCategory::getModelCateId,ModelCategory::getOrderNum,ModelCategory::setChildren));
 //       return AjaxResult.success(list);
     }
-
-
+    @PreAuthorize("@ss.hasPermi('model:category:list')")
+    @GetMapping("/option")
+    public AjaxResult option(ModelCategory modelCategory)
+    {
+        if(StringUtils.isNull(modelCategory.getParentId())){
+            modelCategory.setParentId(0);
+        }
+        List<ModelCategory> list = modelCategoryService.list(modelCategory);
+        return AjaxResult.success(Optional.ofNullable(list).orElse(Collections.emptyList())
+                .parallelStream().map(m->{
+                    Map<String,Object> item = new HashMap<>();
+                    item.put("key",m.getCode());
+                    item.put("val",m.getModelCateName());
+                    return item;
+                }).collect(Collectors.toList()));
+    }
     /**
      * 获取模型分类详细信息
      */

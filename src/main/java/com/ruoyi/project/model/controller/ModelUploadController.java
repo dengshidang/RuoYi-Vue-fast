@@ -9,6 +9,7 @@ import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
 import com.ruoyi.framework.config.RuoYiConfig;
 import com.ruoyi.framework.config.ServerConfig;
+import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.framework.web.page.TableDataInfo;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -106,7 +108,6 @@ public class ModelUploadController extends BaseController
             //构建存储信息
             ModelUpload upload = new ModelUpload();
             String extension = FilenameUtils.getExtension(fileName);
-//            uploadList.add(upload);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
             ajax.put("fileName", fileName);
@@ -122,7 +123,12 @@ public class ModelUploadController extends BaseController
                 upload.setFileType(extension);
                 upload.setOriginalName(originalFilename);
                 upload.setSize(file.getSize());
-                SpringUtils.getBean(IModelUploadService.class).insertModelUpload(upload);
+                AsyncManager.me().execute(new TimerTask() {
+                    @Override
+                    public void run() {
+                        SpringUtils.getBean(IModelUploadService.class).insertModelUpload(upload);
+                    }
+                });
             }
             return ajax;
         } catch (Exception e) {

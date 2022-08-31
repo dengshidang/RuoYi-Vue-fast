@@ -9,7 +9,6 @@ import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
 import com.ruoyi.framework.config.RuoYiConfig;
 import com.ruoyi.framework.config.ServerConfig;
-import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.framework.web.page.TableDataInfo;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -108,27 +106,24 @@ public class ModelUploadController extends BaseController
             //构建存储信息
             ModelUpload upload = new ModelUpload();
             String extension = FilenameUtils.getExtension(fileName);
-            // 模型文件 特殊处理
-            if(extension.equals("gltf")){
-                String modelCode = Stream.of(pref.split(separator)[0], pref.split(separator)[1], pref.split(separator)[2], pref.split(separator)[3]).collect(Collectors.joining(separator));
-                upload.setModelCode(modelCode);
-            }
-            upload.setFilePath(fileName);
-            upload.setFileName(FileUtils.getName(fileName));
-            upload.setFileType(extension);
-            upload.setOriginalName(originalFilename);
-            upload.setSize(file.getSize());
+//            uploadList.add(upload);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
             ajax.put("fileName", fileName);
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
-            AsyncManager.me().execute(new TimerTask() {
-                @Override
-                public void run() {
-                    SpringUtils.getBean(IModelUploadService.class).insertModelUpload(upload);
-                }
-            });
+            String[] split = pref.split(separator);
+            if(split.length >= 4){
+                // 模型文件 特殊处理
+                String modelCode = Stream.of(split[0], split[1],split[2],split[3]).collect(Collectors.joining(separator));
+                upload.setModelCode(modelCode);
+                upload.setFilePath(fileName);
+                upload.setFileName(FileUtils.getName(fileName));
+                upload.setFileType(extension);
+                upload.setOriginalName(originalFilename);
+                upload.setSize(file.getSize());
+                SpringUtils.getBean(IModelUploadService.class).insertModelUpload(upload);
+            }
             return ajax;
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());

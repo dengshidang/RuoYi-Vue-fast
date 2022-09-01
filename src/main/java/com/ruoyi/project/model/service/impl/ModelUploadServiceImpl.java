@@ -52,7 +52,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
     public List<ModelUpload> selectModelUploadList(ModelUpload modelUpload)
     {
        return this.baseMapper.selectByExample( this.baseMapper.wrapper()
-                .like(StringUtils.isNotEmpty(modelUpload.getModelCode()),ModelUpload::getModelCode,modelUpload.getModelCode())
+                .like(StringUtils.isNotEmpty(modelUpload.getModelCode()),ModelUpload::getModelCode,StringUtils.format("{}%",modelUpload.getModelCode()))
                 .like(StringUtils.isNotEmpty(modelUpload.getFileName()),ModelUpload::getFileName,modelUpload.getFileName())
                 .like(StringUtils.isNotEmpty(modelUpload.getOriginalName()),ModelUpload::getOriginalName,modelUpload.getOriginalName())
                 .eq(StringUtils.isNotEmpty(modelUpload.getFileType()),ModelUpload::getFileType,modelUpload.getFileType())

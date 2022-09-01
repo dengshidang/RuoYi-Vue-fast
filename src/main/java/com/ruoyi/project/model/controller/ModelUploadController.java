@@ -1,6 +1,8 @@
 package com.ruoyi.project.model.controller;
 
+import com.ruoyi.common.enums.EModelSuffix;
 import com.ruoyi.common.enums.ESeparator;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -54,6 +56,25 @@ public class ModelUploadController extends BaseController
         return getDataTable(list);
     }
 
+    /**
+     *
+     * @param modelUpload
+     * @return
+     * @see    AjaxResult<com.ruoyi.project.model.dto.ModelUplodeDTO>
+     */
+    @PreAuthorize("@ss.hasPermi('model:upload:list')")
+    @GetMapping("/waithandlers")
+    public AjaxResult waithandlers(ModelUpload modelUpload)
+    {
+        startPage();
+        List<ModelUpload> list = modelUploadService.selectModelUploadList(modelUpload);
+        if(StringUtils.isNotEmpty(list)){
+            List<String> iconCodes = list.parallelStream().map(m -> m.getModelCode() + ESeparator.DEFAULT + EModelSuffix.ICON).collect(Collectors.toList());
+            modelUploadService.sele
+        }
+
+
+    }
     /**
      * 导出素材列表
      */

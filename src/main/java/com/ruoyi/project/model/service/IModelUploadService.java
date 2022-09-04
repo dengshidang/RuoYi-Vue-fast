@@ -34,7 +34,7 @@ import io.mybatis.service.BaseService;
      * @param modelUpload 素材
      * @return 结果
      */
-     int insertModelUpload(ModelUpload modelUpload);
+     int insertModelUpload( List<ModelUpload> modelUpload);
 
     /**
      * 修改素材

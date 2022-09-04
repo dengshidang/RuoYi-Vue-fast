@@ -25,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2022-08-19
  */
 @Service
-public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,ModelUploadMapper> implements IModelUploadService
-{
+public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer, ModelUploadMapper> implements IModelUploadService {
 
     @Autowired
     IModelCodeService modelCodeService;
+
     /**
      * 查询素材
      *
@@ -37,8 +37,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
      * @return 素材
      */
     @Override
-    public ModelUpload selectModelUploadById(Integer id)
-    {
+    public ModelUpload selectModelUploadById(Integer id) {
         return this.baseMapper.selectByPrimaryKey(id).orElse(null);
     }
 
@@ -49,45 +48,49 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
      * @return 素材
      */
     @Override
-    public List<ModelUpload> selectModelUploadList(ModelUpload modelUpload)
-    {
-       return this.baseMapper.selectByExample( this.baseMapper.wrapper()
-                .like(StringUtils.isNotEmpty(modelUpload.getModelCode()),ModelUpload::getModelCode,StringUtils.format("{}%",modelUpload.getModelCode()))
-                .like(StringUtils.isNotEmpty(modelUpload.getFileName()),ModelUpload::getFileName,modelUpload.getFileName())
-                .like(StringUtils.isNotEmpty(modelUpload.getOriginalName()),ModelUpload::getOriginalName,modelUpload.getOriginalName())
-                .eq(StringUtils.isNotEmpty(modelUpload.getFileType()),ModelUpload::getFileType,modelUpload.getFileType())
-                .eq(StringUtils.isNotNull(modelUpload.getHandler()),ModelUpload::getHandler,modelUpload.getHandler())
+    public List<ModelUpload> selectModelUploadList(ModelUpload modelUpload) {
+        return this.baseMapper.selectByExample(this.baseMapper.wrapper()
+                .like(StringUtils.isNotEmpty(modelUpload.getModelCode()), ModelUpload::getModelCode, StringUtils.format("{}%", modelUpload.getModelCode()))
+                .like(StringUtils.isNotEmpty(modelUpload.getFileName()), ModelUpload::getFileName, modelUpload.getFileName())
+                .like(StringUtils.isNotEmpty(modelUpload.getOriginalName()), ModelUpload::getOriginalName, modelUpload.getOriginalName())
+                .eq(StringUtils.isNotEmpty(modelUpload.getFileType()), ModelUpload::getFileType, modelUpload.getFileType())
+                .eq(StringUtils.isNotNull(modelUpload.getHandler()), ModelUpload::getHandler, modelUpload.getHandler())
+                .in(StringUtils.isNotEmpty(modelUpload.getIconCodes()), ModelUpload::getModelCode, modelUpload.getIconCodes())
                 .example().orderByDesc(ModelUpload::getId));
     }
 
     /**
      * 新增素材
      *
-     * @param modelUpload 素材
+     * @param modelUploads 素材
      * @return 结果
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insertModelUpload(ModelUpload modelUpload)
-    {
-        modelUpload.setCreateTime(DateUtils.getNowDate());
-        Example<ModelUpload> example = baseMapper.wrapper().eq(ModelUpload::getOriginalName, modelUpload.getOriginalName()).example();
-        List<ModelUpload> dbmodelUploads = baseMapper.selectByExample(example);
-        if(ObjectUtils.isNotEmpty(dbmodelUploads)){
-            ModelUpload dbupload = dbmodelUploads.get(0);
-            modelUpload.setId(dbupload.getId());
-            String filePath = dbupload.getFilePath();
-            //查询备份文件，按每日更新
-            ModelUpload modelBack = this.baseMapper.selectBack(filePath);
-            if(StringUtils.isNotNull(modelBack)){
-                baseMapper.updateBack(dbupload);
-            }else{
-                this.baseMapper.insertBack(dbupload);
+    public int insertModelUpload(List<ModelUpload> modelUploads) {
+        int add = 0;
+        for (ModelUpload modelUpload : modelUploads) {
+            modelUpload.setCreateTime(DateUtils.getNowDate());
+            Example<ModelUpload> example = baseMapper.wrapper().eq(ModelUpload::getOriginalName, modelUpload.getOriginalName()).example();
+            List<ModelUpload> dbmodelUploads = baseMapper.selectByExample(example);
+            if (ObjectUtils.isNotEmpty(dbmodelUploads)) {
+                ModelUpload dbupload = dbmodelUploads.get(0);
+                modelUpload.setId(dbupload.getId());
+                String filePath = dbupload.getFilePath();
+                //查询备份文件，按每日更新
+                ModelUpload modelBack = this.baseMapper.selectBack(filePath);
+                if (StringUtils.isNotNull(modelBack)) {
+                    baseMapper.updateBack(dbupload);
+                } else {
+                    this.baseMapper.insertBack(dbupload);
+                }
+                modelUpload.setUpdateTime(DateUtils.getNowDate());
+                add += this.baseMapper.updateByPrimaryKeySelective(modelUpload);
+            } else {
+                add += this.baseMapper.insertSelective(modelUpload);
             }
-            modelUpload.setUpdateTime(DateUtils.getNowDate());
-            return this.baseMapper.updateByPrimaryKeySelective(modelUpload);
         }
-        return this.baseMapper.insertSelective(modelUpload);
+        return add;
     }
 
     /**
@@ -97,8 +100,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
      * @return 结果
      */
     @Override
-    public int updateModelUpload(ModelUpload modelUpload)
-    {
+    public int updateModelUpload(ModelUpload modelUpload) {
         modelUpload.setUpdateTime(DateUtils.getNowDate());
         return this.baseMapper.updateByPrimaryKeySelective(modelUpload);
     }
@@ -110,8 +112,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
      * @return 结果
      */
     @Override
-    public int deleteModelUploadByIds(Integer[] ids)
-    {
+    public int deleteModelUploadByIds(Integer[] ids) {
         return this.baseMapper.deleteByFieldList(ModelUpload::getId, Stream.of(ids).collect(Collectors.toList()));
     }
 
@@ -120,7 +121,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload,Integer,
         for (ModelUpload upload : uploadList) {
             // 查询编码名称
             ModelCode modelCode = modelCodeService.selectModelCodeByModeCode(upload.getModelCode());
-            if(ObjectUtils.isNotEmpty(modelCode)){
+            if (ObjectUtils.isNotEmpty(modelCode)) {
                 upload.setModelName(modelCode.getModelName());
             }
             super.saveSelective(upload);

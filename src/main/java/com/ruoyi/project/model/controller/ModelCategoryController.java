@@ -57,22 +57,6 @@ public class ModelCategoryController extends BaseController
                 }).collect(Collectors.toList()));
 
     }
-    @PreAuthorize("@ss.hasPermi('model:category:list')")
-    @GetMapping("/option")
-    public AjaxResult option(ModelCategory modelCategory)
-    {
-        if(StringUtils.isNull(modelCategory.getParentId())){
-            modelCategory.setParentId(0);
-        }
-        List<ModelCategory> list = modelCategoryService.list(modelCategory);
-        return AjaxResult.success(Optional.ofNullable(list).orElse(Collections.emptyList())
-                .parallelStream().map(m->{
-                    Map<String,Object> item = new HashMap<>();
-                    item.put("key",m.getCode());
-                    item.put("val",m.getModelCateName());
-                    return item;
-                }).collect(Collectors.toList()));
-    }
     /**
      * 获取模型分类详细信息
      */

@@ -3,6 +3,7 @@ package com.ruoyi.project.model.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson2.JSONObject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,8 +76,9 @@ public class ModelController extends BaseController {
     @PreAuthorize("@ss.hasPermi('model:model:add')")
     @Log(title = "模型", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Model model) {
-        return toAjax(modelService.insertModel(model));
+    public AjaxResult add(@RequestBody JSONObject model) {
+        System.out.println(model);
+        return toAjax(true);
     }
 
     /**

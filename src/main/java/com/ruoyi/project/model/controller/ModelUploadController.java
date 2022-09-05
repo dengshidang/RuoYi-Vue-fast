@@ -71,7 +71,7 @@ public class ModelUploadController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('model:upload:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Integer id) {
+    public AjaxResult getInfo(@PathVariable("id") String id) {
         return AjaxResult.success(modelUploadService.selectModelUploadById(id));
     }
 
@@ -125,7 +125,7 @@ public class ModelUploadController extends BaseController {
     @PreAuthorize("@ss.hasPermi('model:upload:remove')")
     @Log(title = "素材", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Integer[] ids) {
+    public AjaxResult remove(@PathVariable String[] ids) {
         return toAjax(modelUploadService.deleteModelUploadByIds(ids));
     }
 }

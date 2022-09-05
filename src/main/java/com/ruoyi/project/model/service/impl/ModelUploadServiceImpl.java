@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.project.common.util.SnowFlake;
 import com.ruoyi.project.model.domain.ModelCode;
 import com.ruoyi.project.model.service.IModelCodeService;
 import io.mybatis.mapper.example.Example;
@@ -25,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2022-08-19
  */
 @Service
-public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer, ModelUploadMapper> implements IModelUploadService {
-
+public class ModelUploadServiceImpl extends AbstractService<ModelUpload, String, ModelUploadMapper> implements IModelUploadService {
+    final   SnowFlake snowFlake  = new SnowFlake();
     @Autowired
     IModelCodeService modelCodeService;
 
@@ -37,7 +38,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer
      * @return 素材
      */
     @Override
-    public ModelUpload selectModelUploadById(Integer id) {
+    public ModelUpload selectModelUploadById(String id) {
         return this.baseMapper.selectByPrimaryKey(id).orElse(null);
     }
 
@@ -56,6 +57,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer
                 .eq(StringUtils.isNotEmpty(modelUpload.getFileType()), ModelUpload::getFileType, modelUpload.getFileType())
                 .eq(StringUtils.isNotNull(modelUpload.getHandler()), ModelUpload::getHandler, modelUpload.getHandler())
                 .in(StringUtils.isNotEmpty(modelUpload.getIconCodes()), ModelUpload::getModelCode, modelUpload.getIconCodes())
+                .in(StringUtils.isNotEmpty(modelUpload.getMatch()), ModelUpload::getId, modelUpload.getMatch())
                 .example().orderByDesc(ModelUpload::getId));
     }
 
@@ -68,22 +70,24 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertModelUpload(List<ModelUpload> modelUploads) {
+
         int add = 0;
         for (ModelUpload modelUpload : modelUploads) {
+            List<ModelUpload> children = modelUpload.getChildren();
+            List<ModelUpload> self = modelUpload.getSelf();
+            String  id = snowFlake.nextId().toString();
+            modelUpload.setId(id);
+            handlerSubId(children);
+            handlerSubId(self);
             modelUpload.setCreateTime(DateUtils.getNowDate());
-            Example<ModelUpload> example = baseMapper.wrapper().eq(ModelUpload::getOriginalName, modelUpload.getOriginalName()).example();
+            Example<ModelUpload> example = baseMapper.wrapper()
+                    .eq(ModelUpload::getModelCode, modelUpload.getModelCode())
+                    .eq(ModelUpload::getFileType, modelUpload.getFileType())
+                    .example();
             List<ModelUpload> dbmodelUploads = baseMapper.selectByExample(example);
             if (ObjectUtils.isNotEmpty(dbmodelUploads)) {
                 ModelUpload dbupload = dbmodelUploads.get(0);
                 modelUpload.setId(dbupload.getId());
-                String filePath = dbupload.getFilePath();
-                //查询备份文件，按每日更新
-                ModelUpload modelBack = this.baseMapper.selectBack(filePath);
-                if (StringUtils.isNotNull(modelBack)) {
-                    baseMapper.updateBack(dbupload);
-                } else {
-                    this.baseMapper.insertBack(dbupload);
-                }
                 modelUpload.setUpdateTime(DateUtils.getNowDate());
                 add += this.baseMapper.updateByPrimaryKeySelective(modelUpload);
             } else {
@@ -91,6 +95,18 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer
             }
         }
         return add;
+    }
+
+    private void handlerSubId(List<ModelUpload> children) {
+        if(ObjectUtils.isEmpty(children)){
+           return;
+        }
+        for (ModelUpload child : children) {
+            if(child.getId()!=null) continue;
+            String  id = snowFlake.nextId().toString();
+            child.setId(id);
+            handlerSubId(child.getChildren());
+        }
     }
 
     /**
@@ -102,6 +118,10 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer
     @Override
     public int updateModelUpload(ModelUpload modelUpload) {
         modelUpload.setUpdateTime(DateUtils.getNowDate());
+        List<ModelUpload> children = modelUpload.getChildren();
+        List<ModelUpload> self = modelUpload.getSelf();
+        handlerSubId(children);
+        handlerSubId(self);
         return this.baseMapper.updateByPrimaryKeySelective(modelUpload);
     }
 
@@ -112,7 +132,7 @@ public class ModelUploadServiceImpl extends AbstractService<ModelUpload, Integer
      * @return 结果
      */
     @Override
-    public int deleteModelUploadByIds(Integer[] ids) {
+    public int deleteModelUploadByIds(String[] ids) {
         return this.baseMapper.deleteByFieldList(ModelUpload::getId, Stream.of(ids).collect(Collectors.toList()));
     }
 

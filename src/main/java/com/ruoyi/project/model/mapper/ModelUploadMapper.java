@@ -11,7 +11,7 @@ import javax.jws.WebParam;
  * @date 2022/8/19 10:26
  */
 @Mapper
-public interface ModelUploadMapper extends BaseMapper<ModelUpload, Integer> {
+public interface ModelUploadMapper extends BaseMapper<ModelUpload, String> {
 
   int  insertBack(ModelUpload modelUpload);
   int  updateBack(ModelUpload modelUpload);

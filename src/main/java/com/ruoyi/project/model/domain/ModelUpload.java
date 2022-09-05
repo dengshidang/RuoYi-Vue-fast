@@ -27,7 +27,7 @@ public class ModelUpload {
      * 上传id
      */
     @Entity.Column(id = true)
-    private Integer id;
+    private String id;
 
     /**
      * 源文件名称
@@ -50,6 +50,7 @@ public class ModelUpload {
     private String modelCode;
     private String modelName;
     private String icon;
+    @Entity.Column(typeHandler = FastjsonArrayHandler.class)
     private List<String> tietus;
 
     /**
@@ -70,6 +71,8 @@ public class ModelUpload {
     private List<ModelUpload> children;
     @Entity.Column(typeHandler = FastjsonArrayHandler.class)
     private List<ModelUpload> self;
+    @Entity.Column(typeHandler = FastjsonArrayHandler.class,value = "`match`")
+    private List<String> match;
 
     /**
      * 特殊内置方法 获取模型  icon

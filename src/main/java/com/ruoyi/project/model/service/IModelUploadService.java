@@ -10,7 +10,7 @@ import io.mybatis.service.BaseService;
  * @author dengsd
  * @date 2022-08-19
  */
- public  interface IModelUploadService extends BaseService<ModelUpload,Integer>
+ public  interface IModelUploadService extends BaseService<ModelUpload,String>
 {
     /**
      * 查询素材
@@ -18,7 +18,7 @@ import io.mybatis.service.BaseService;
      * @param id 素材主键
      * @return 素材
      */
-     ModelUpload selectModelUploadById(Integer id);
+     ModelUpload selectModelUploadById(String id);
 
     /**
      * 查询素材列表
@@ -50,7 +50,7 @@ import io.mybatis.service.BaseService;
      * @param ids 需要删除的素材主键集合
      * @return 结果
      */
-     int deleteModelUploadByIds(Integer[] ids);
+     int deleteModelUploadByIds(String[] ids);
 
     boolean insertBatch(List<ModelUpload> uploadList);
 }
